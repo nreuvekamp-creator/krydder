@@ -223,6 +223,7 @@
   /* melding onderin */
   #toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 80px; z-index: 30; width: min(560px, calc(100vw - 32px)); background: var(--vlak); color: var(--tekst); border: 1px solid var(--lijn); border-left: 5px solid var(--oranje); border-radius: 6px; box-shadow: 0 4px 16px var(--schaduw); padding: 12px 14px; }
   #toast .knop { margin-top: 8px; }
+  #foutbalk { position: fixed; left: 0; right: 0; top: 0; z-index: 50; background: #b3261e; color: #fff; border: 0; width: 100%; padding: 14px 16px; font: inherit; font-weight: 600; text-align: center; cursor: pointer; box-shadow: 0 2px 10px var(--schaduw); }
 
   /* formulieren */
   input[type=text], textarea { font: inherit; border: 1px solid var(--lijn); border-radius: 5px; padding: 8px 10px; background: var(--vlak); color: var(--tekst); width: 100%; }
@@ -450,6 +451,7 @@
 </div>
 
 <div id="overhoorbalk" class="verborgen"><div class="binnen"><span id="balktekst" class="klein"></span><div class="oefen" id="boefen"></div></div></div>
+<button id="foutbalk" role="alert" hidden>Something went wrong – your progress is saved. Click to go back home.</button>
 <div id="toast" role="status" hidden><div id="toasttekst"></div><button class="knop grijs" id="toastdicht">OK</button></div>
 
 <script src="lijsten.js"></script>
@@ -461,10 +463,13 @@
 <script src="opdrachten-f.js"></script>
 <script src="opdrachten-g.js"></script>
 <script src="opdrachten-h.js"></script>
+<script src="opdrachten-i.js"></script>
 <script src="examen.js"></script>
 <script>(window.LIJSTEN || []).forEach(function (l) { l.bronGroep = l.groep; }); // oorspronkelijke groep = bron (indeling.js overschrijft groep met het hoofdstuk)</script>
 <script src="indeling.js"></script>
 <script src="audio-remote.js"></script>
+<script src="opdrachten-luister.js"></script>
+<script src="luisteren.js"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -486,18 +491,42 @@
   function pct(x) { return Math.round(100 * x) + "%"; }
 
   // ---------- opslag (alles in try/catch: kan geblokkeerd zijn) ----------
-  function leesMijn() { try { return JSON.parse(localStorage.getItem(OPSLAG)) || []; } catch (e) { return []; } }
-  function bewaarMijn(l) { try { localStorage.setItem(OPSLAG, JSON.stringify(l)); return true; } catch (e) { return false; } }
+  // kapotte opslag mag de site nooit breken: alles wat niet de verwachte vorm heeft wordt weggegooid (met één melding)
+  var weggegooid = [];
+  function lees(sleutel, goed) {
+    var x; try { x = localStorage.getItem(sleutel); } catch (e) { return null; }
+    if (x == null) return null;
+    try { x = JSON.parse(x); if (goed(x)) return x; } catch (e) {}
+    weggegooid.push(sleutel); try { localStorage.removeItem(sleutel); } catch (e) {}
+    return null;
+  }
+  function isObj(x) { return !!x && typeof x === "object" && !Array.isArray(x); }
+  var opslagGemeld = false;
+  function zet(sleutel, waarde) { // false + één melding als de browser niet (meer) kan bewaren
+    try { localStorage.setItem(sleutel, waarde); return true; }
+    catch (e) { if (!opslagGemeld && $("toast")) { opslagGemeld = true; melding("<b>Your progress can't be saved right now</b> (browser storage is full or blocked). You can keep practising, but export your progress in Settings to keep it."); } return false; }
+  }
+  function geldigeLijst(l) { return isObj(l) && typeof l.id === "string" && Array.isArray(l.woorden); }
+  function leesMijn() {
+    var l = lees(OPSLAG, Array.isArray) || [];
+    return l.filter(geldigeLijst).map(function (x) { return { id: x.id, titel: String(x.titel == null ? "Untitled" : x.titel), woorden: x.woorden.filter(function (w) { return Array.isArray(w) && w[0] != null && w[1] != null; }).map(function (w) { return [String(w[0]), String(w[1])]; }) }; });
+  }
+  function bewaarMijn(l) { return zet(OPSLAG, JSON.stringify(l)); }
   var inst = { thema: "auto", kopie: true, overslaan: false, goedrekenen: false, uitspraak: false, overtypen: false, rondes: 1, nafout: "2500", richting: "no-nl", uitlegWeg: {}, stem: { nb: "", en: "" } };
-  try { var opgeslagen = JSON.parse(localStorage.getItem(INST)); if (opgeslagen) for (var k in inst) if (k in opgeslagen) inst[k] = opgeslagen[k]; } catch (e) {}
-  function bewaarInst() { try { localStorage.setItem(INST, JSON.stringify(inst)); } catch (e) {} }
+  (function () {
+    var o = lees(INST, isObj); if (!o) return;
+    for (var k in inst) if (k in o && typeof o[k] === typeof inst[k] && (typeof inst[k] !== "object" || isObj(o[k]))) inst[k] = o[k];
+    var mag = { thema: ["auto", "licht", "donker"], rondes: [1, 2, 3, 4], nafout: ["2500", "5000", "zelf"], richting: ["no-nl", "nl-no", "mix"] };
+    for (k in mag) if (mag[k].indexOf(inst[k]) < 0) inst[k] = mag[k][0];
+  })();
+  function bewaarInst() { zet(INST, JSON.stringify(inst)); }
   // ---------- geheugen per woord ----------
   // sleutel = gevraagde kant + Noors + vertaling: overleeft herordenen en deelt de examenlijsten met hun bronlijsten
   var GEHEUGEN = "noors-geheugen", SESSIE = "noors-sessie", PAD = "noors-pad", mem = {}, pad = {};
-  try { mem = JSON.parse(localStorage.getItem(GEHEUGEN)) || {}; } catch (e) {}
-  try { pad = JSON.parse(localStorage.getItem(PAD)) || {}; } catch (e) {}
-  function bewaarMem() { try { localStorage.setItem(GEHEUGEN, JSON.stringify(mem)); } catch (e) {} }
-  function bewaarPad() { try { localStorage.setItem(PAD, JSON.stringify(pad)); } catch (e) {} }
+  mem = geldigeMem(lees(GEHEUGEN, isObj));
+  pad = geldigPad(lees(PAD, isObj));
+  function bewaarMem() { zet(GEHEUGEN, JSON.stringify(mem)); }
+  function bewaarPad() { zet(PAD, JSON.stringify(pad)); }
   function memSleutel(w, kant) { return kant + "\t" + w[0] + "\t" + w[1]; }
   function onthoud(it, ok) {
     var k = memSleutel(it.w, it.aKant), e = mem[k], oud = e ? { g: e.g, f: e.f, t: e.t, h: e.h } : null;
@@ -531,7 +560,7 @@
   function geldigPad(x) { // import: {best 0..1, geleerd, gehoord}
     var uit = {};
     if (x && typeof x === "object") for (var k in x) { var e = x[k], r = {};
-      if (!e || typeof e !== "object" || k.length > 200) continue;
+      if (!e || typeof e !== "object" || k.length > 200 || k === "__proto__") continue;
       if (isFinite(e.best) && e.best >= 0 && e.best <= 1) r.best = +e.best;
       if (e.geleerd === true) r.geleerd = true;
       if (e.gehoord === true) r.gehoord = true;
@@ -540,6 +569,7 @@
   }
   window.__mem = function () { return mem; }; // voor tests
   window.__pad = function () { return pad; };
+  window.__zin = function () { return zinAudio && { src: zinAudio.getAttribute("src"), paused: zinAudio.paused, t: zinAudio.currentTime, seg: zinAudio.__seg }; }; // voor tests
 
   function pasThemaToe() { var r = document.documentElement; if (inst.thema === "licht") r.dataset.theme = "light"; else if (inst.thema === "donker") r.dataset.theme = "dark"; else delete r.dataset.theme; }
 
@@ -618,15 +648,17 @@
   var toastTimer;
   function melding(html) { $("toasttekst").innerHTML = html; $("toast").hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { $("toast").hidden = true; }, 15000); }
   var wachtend = null; // Chrome laadt de stemmen pas ~1 s na het openen: tot dan wachten in plaats van "geen stem" melden
-  function spreek(tekst, code) {
+  var geenStemGemeld = false;
+  function geenStem(auto) { if (auto && geenStemGemeld) return; geenStemGemeld = true; melding(GEEN_STEM); } // automatisch voorlezen: maar één keer melden, niet bij elk woord
+  function spreek(tekst, code, auto) {
     code = code || "nb";
     var stem = stemVoor(code);
     if (!stem && "speechSynthesis" in window && !(speechSynthesis.getVoices() || []).length && !wachtend) {
       wachtend = { tekst: tekst, code: code };
-      setTimeout(function () { if (wachtend) { var w = wachtend; wachtend = null; if (!stemVoor(w.code) && w.code === "nb") melding(GEEN_STEM); } }, 3000);
+      setTimeout(function () { if (wachtend) { var w = wachtend; wachtend = null; if (!stemVoor(w.code) && w.code === "nb") geenStem(auto); } }, 3000);
       return false;
     }
-    if (!stem) { if (code === "nb") melding(GEEN_STEM); return false; }
+    if (!stem) { if (code === "nb") geenStem(auto); return false; }
     var u = new SpeechSynthesisUtterance(spreekTekst(tekst));
     // voice EN lang allebei zetten: Safari valt anders terug op de systeemstem (Engels)
     u.voice = stem; u.lang = String(stem.lang || (code === "nb" ? "nb-NO" : "en-GB")).replace("_", "-"); u.rate = 0.9;
@@ -638,10 +670,40 @@
       if (e.error === "interrupted" || e.error === "canceled" || e.error === "not-allowed" || u.__opnieuw) return;
       var lok = stemmenVoor(code).filter(function (x) { return x.localService !== false; })[0], u2 = new SpeechSynthesisUtterance(u.text);
       u2.__opnieuw = true; if (lok) u2.voice = lok; u2.lang = u.lang; u2.rate = u.rate; u2.onerror = function (e2) { info.events.push("retry-error:" + e2.error); };
-      info.events.push("retry:" + (lok ? lok.name : "lang only")); speechSynthesis.speak(u2);
+      info.events.push("retry:" + (lok ? lok.name : "lang only")); try { speechSynthesis.speak(u2); } catch (x) {}
     };
-    speechSynthesis.cancel(); speechSynthesis.speak(u);
+    if (zinAudio) zinAudio.pause();
+    try { speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) { info.events.push("throw:" + e.message); return false; }
     return true;
+  }
+  // luisterzin: het stukje uit de opname (start/eind); ontbreekt het bestand, dan de computerstem, en zonder stem de zin in beeld
+  var zinAudio = null, zinKapot = {};
+  function zinSpeler() {
+    if (zinAudio) return zinAudio;
+    var a = zinAudio = new Audio(); a.preload = "auto";
+    a.addEventListener("timeupdate", function () {
+      var seg = a.__seg; if (!seg || a.paused) return;
+      var rest = seg.eind - a.currentTime;
+      if (rest <= 0.02) a.pause();
+      else if (rest < 0.4) { clearTimeout(a.__t); a.__t = setTimeout(function () { if (a.__seg === seg) a.pause(); }, rest * 1000 / (a.playbackRate || 1)); }
+    });
+    a.addEventListener("error", function () { var f = a.__mislukt; a.__seg = a.__mislukt = null; if (f) f(); });
+    return a;
+  }
+  function speelVraag(it, auto) {
+    if (!it.seg || zinKapot[it.seg.src]) return terugval(it, auto);
+    var a = zinSpeler(), seg = it.seg;
+    try { speechSynthesis.cancel(); } catch (e) {}
+    a.__seg = seg; a.__mislukt = function () { zinKapot[seg.src] = 1; terugval(it, auto); };
+    var naarStart = function () { try { a.currentTime = seg.start; } catch (e) {} };
+    if (a.getAttribute("src") !== seg.src) { a.src = seg.src; a.addEventListener("loadedmetadata", naarStart, { once: true }); } else { a.pause(); naarStart(); }
+    var p = a.play(); if (p && p.catch) p.catch(function () {}); // fout bestand: het error-event hierboven
+    return true;
+  }
+  function terugval(it, auto) {
+    if (spreek(it.q, "nb", auto)) return true;
+    if (sessie && sessie.huidig === it && sessie.fase === "vraag") { $("vraag").textContent = it.q; $("vraagtaal").textContent = "No recording or voice available, so read it instead and type it:"; $("nogmaals").hidden = true; }
+    return false;
   }
   function spreekKnop(tekst, code) { return "<button class='spreek spk-" + code + "' data-spreek='" + esc(tekst) + "' data-code='" + code + "' aria-label='Pronounce' title='Pronounce'>" + SPK + "</button>"; }
 
@@ -713,7 +775,23 @@
     $("pad").innerHTML = p.map(function (x, i) { return x[1] && i < p.length - 1 ? "<a href='#' data-naar='" + x[1] + "'>" + esc(x[0]) + "</a>" : esc(x[0]); }).join(" / ");
     toonTaal();
     window.scrollTo(0, 0);
+    // browser-terugknop: elk scherm een eigen stap in de geschiedenis (anders verlaat Terug de site)
+    if (!uitGeschiedenis) try { if (s === "start" || (history.state && history.state.s === s)) history.replaceState({ s: s }, ""); else history.pushState({ s: s }, ""); } catch (e) {}
   }
+  var uitGeschiedenis = false;
+  window.addEventListener("popstate", function (e) {
+    var s = e.state && e.state.s;
+    uitGeschiedenis = true;
+    try {
+      if (s === "overhoor" || s === "eind") { if (sessie && sessie.fase === "eind") toon("eind"); else if (bewaard) hervat(); else toon("start"); }
+      else if (s === "lijst" && huidigeLijst) openLijst(huidigeLijst.id);
+      else if (s === "keuze" && bronKeuze && methodeKeuze && methodeKeuze !== "luisteren") toon("keuze");
+      else if (s === "methode" && bronKeuze) toon("methode");
+      else if (s === "leerpadkap" && padKap(padKapId)) toon("leerpadkap");
+      else if (s === "leerpad" || s === "mijn" || s === "instellingen" || s === "luister") toon(s);
+      else toon("start");
+    } finally { uitGeschiedenis = false; }
+  });
 
   // ---------- stap 1: bron ----------
   function tekenBronnen() {
@@ -797,7 +875,7 @@
   function oefenHTML(id, label, lijsten, hoofd) {
     var dict = !!stemVoor("nb"), kanMK = lijsten.reduce(function (n, l) { return n + (l.woorden || []).filter(bruikbaar).length; }, 0) >= 4, wb = lijsten.some(werkbladLijst);
     var uit = { dictee: dict ? "" : "Not available: no Norwegian voice on this device", meerkeuze: kanMK ? "" : "Needs at least 4 words", werkblad: wb ? "" : "Only for exercise lists" };
-    if (uit[hoofd]) hoofd = "leren";
+    if (uit[hoofd]) { label = label.replace(METHODES[hoofd], METHODES.leren); hoofd = "leren"; } // knoptekst moet zeggen wat er echt start
     return "<button class='knop' id='" + id + "' data-oefen='" + hoofd + "'>" + esc(label) + "</button><details class='uitklap'><summary class='knop' aria-label='Choose a practice method'>&#9662;</summary><div class='menu" + (id === "begin" ? " boven" : "") + "'>" +
       VOLGORDE.map(function (m) {
         return "<button data-oefen='" + m + "'" + (uit[m] ? " disabled" : "") + "><span>" + METHODES[m] + (m === "leren" ? " <span class='label'>RECOMMENDED</span>" : "") + "<span class='uitleg'>" + esc(uit[m] || KORT[m]) + "</span></span></button>";
@@ -860,9 +938,17 @@
     werkblad: "The whole exercise is on one page, like in the book. Fill in every blank, then press Check. Wrong ones can be tried again."
   };
   // bouwt de vraag/antwoord-kant per woord; vaste opdrachten en luisterzinnen draaien nooit om
+  // velden die uit woord + lijst volgen (ook bij hervatten); seg = dit stukje van de opname (start/eind in seconden)
+  function vulAf(it, w, l) {
+    var x = isObj(w[2]) ? w[2] : {}, t = x.tekstId || l.tekstId || null, bron = t && LUISTER.filter(function (a) { return a.id === t; })[0];
+    it.w = w; it.l = l; it.bron = l.woorden; it.no = w[0]; it.nl = w[1]; it.taal = l.taal || "English"; it.vast = !!l.vast; it.tts = !!l.tts; it.instructie = l.instructie || "";
+    it.tekstId = bron ? t : null;
+    it.seg = bron && bron.src && isFinite(x.start) && isFinite(x.eind) && +x.eind > +x.start ? { src: bron.src, start: +x.start, eind: +x.eind } : null;
+    return it;
+  }
   function maakItem(w, l, richting, methode) {
     var taal = l.taal || "English", tts = !!l.tts, r = l.vast || tts ? "no-nl" : richting === "mix" ? (Math.random() < 0.5 ? "no-nl" : "nl-no") : richting;
-    var it = { w: w, l: l, no: w[0], nl: w[1], taal: taal, richting: r, vast: !!l.vast, tts: tts, tekstId: l.tekstId || null, instructie: l.instructie || "", eersteKeer: true, bron: l.woorden };
+    var it = vulAf({ richting: r, eersteKeer: true }, w, l);
     if (methode === "dictee" && !tts) { it.q = it.a = l.vast ? w[1] : w[0]; it.qCode = it.aCode = "nb"; it.aNoors = true; it.aKant = l.vast ? 1 : 0; return it; }
     var naarNoors = r === "nl-no";
     it.q = naarNoors ? w[1] : w[0]; it.a = naarNoors ? w[0] : w[1]; it.aKant = naarNoors ? 0 : 1;
@@ -876,6 +962,7 @@
     var paren = [];
     lijsten.forEach(function (l) { gekozenWoorden(l).forEach(function (w) { paren.push({ w: w, l: l }); }); });
     $("startmelding").textContent = paren.length ? "" : "Select at least one list (or word) first.";
+    if (!paren.length && scherm !== "keuze") melding("Select at least one word first.");
     herkomst = scherm === "leerpadkap" ? "leerpadkap" : "keuze";
     start(paren, methode);
   }
@@ -911,17 +998,28 @@
 
   // ---------- sessie bewaren en hervatten ----------
   // bewaard na elk antwoord; het woord dat nog op het scherm staat telt niet mee en komt bij hervatten opnieuw
-  var bewaard = null;
-  try { bewaard = JSON.parse(localStorage.getItem(SESSIE)); } catch (e) {}
+  function geldigeSessie(b) {
+    return isObj(b) && !!METHODES[b.methode] && Array.isArray(b.paren) && Array.isArray(b.items) && b.items.length > 0 &&
+      b.paren.every(function (p) { return isObj(p) && Array.isArray(p.w) && p.w[0] != null && p.w[1] != null; }) &&
+      b.items.every(function (c) { return isObj(c) && c.pi >= 0 && c.pi < b.paren.length && c.pi % 1 === 0; });
+  }
+  var bewaard = lees(SESSIE, geldigeSessie);
+  if (bewaard) { bewaard.naam = String(bewaard.naam || "your words"); bewaard.tegaan = Math.max(0, +bewaard.tegaan || 0); }
+  var NIET_BEWAREN = { w: 1, l: 1, bron: 1, no: 1, nl: 1, instructie: 1, taal: 1, vast: 1, tts: 1, tekstId: 1, seg: 1 }; // af te leiden uit paren: houdt de opslag klein
   function bewaarSessie() {
-    var s = sessie; if (!s || s.fase === "eind" || s.methode === "werkblad") return;
-    var idx = function (a) { return a.map(function (x) { return s.items.indexOf(x); }); };
+    var s = sessie; if (!s || s.fase === "eind") return;
+    var pos = new Map(); s.items.forEach(function (x, i) { pos.set(x, i); });
+    var idx = function (a) { return a.map(function (x) { return pos.get(x); }); };
     bewaard = { naam: s.naam, methode: s.methode, goed: s.goed, fout: s.fout, geleerd: s.geleerd, duur: Date.now() - s.begin, quiz: s.quiz, herkomst: herkomst, padKapId: padKapId,
       tegaan: s.methode === "leren" ? s.items.length - s.geleerd : s.wachtrij.length,
       paren: s.paren.map(function (p) { var l = p.l; return { w: p.w, lid: l.id, titel: l.titel, taal: l.taal, vast: l.vast, instructie: l.instructie, tts: l.tts, tekstId: l.tekstId }; }),
-      items: s.items.map(function (it) { var c = {}; for (var k in it) if (k !== "w" && k !== "l" && k !== "bron") c[k] = it[k]; return c; }),
+      items: s.items.map(function (it) { var c = {}; for (var k in it) if (!NIET_BEWAREN[k]) c[k] = it[k]; return c; }),
       wachtrij: idx(s.wachtrij), blok: idx(s.blok), nieuw: idx(s.nieuw), fouten: idx(s.fouten) };
-    try { localStorage.setItem(SESSIE, JSON.stringify(bewaard)); } catch (e) {}
+    if (s.methode === "werkblad" && s.wbGetekend) { // ingevulde velden en wat al goed was
+      bewaard.wb = [].map.call($("wbinhoud").querySelectorAll(".wbveld"), function (v) { return [v.value, v.readOnly ? 1 : 0]; });
+      bewaard.wbGecheckt = !!s.wbGecheckt; bewaard.tegaan = s.items.length - bewaard.wb.filter(function (x) { return x[1]; }).length;
+    }
+    zet(SESSIE, JSON.stringify(bewaard));
   }
   function wisSessie() { bewaard = null; try { localStorage.removeItem(SESSIE); } catch (e) {} }
   function herstelSessie(b) {
@@ -932,19 +1030,23 @@
       if (!w) { w = p.w; if (los[p.lid] === l) l.woorden.push(w); }
       return { w: w, l: l };
     });
-    var items = b.items.map(function (c) { var it = {}, p = paren[c.pi]; for (var k in c) it[k] = c[k]; it.w = p.w; it.l = p.l; it.bron = p.l.woorden; return it; });
+    var items = b.items.map(function (c) { var it = {}, p = paren[c.pi]; for (var k in c) if (!NIET_BEWAREN[k]) it[k] = c[k]; vulAf(it, p.w, p.l); if (it.q == null || it.a == null) throw new Error("kapot item"); return it; });
     var q = function (a) { return (a || []).map(function (i) { return items[i]; }).filter(Boolean); };
     return { paren: paren, methode: b.methode, naam: b.naam, items: items, wachtrij: q(b.wachtrij), blok: q(b.blok), nieuw: q(b.nieuw), fouten: q(b.fouten), quiz: b.quiz || null,
       geleerd: +b.geleerd || 0, goed: +b.goed || 0, fout: +b.fout || 0, huidig: null, fase: "", token: 0, begin: Date.now() - (+b.duur || 0) };
   }
   function hervat() {
     if (!bewaard) return toon("start");
-    try { sessie = herstelSessie(bewaard); } catch (e) { wisSessie(); return toon("start"); }
-    if (!METHODES[sessie.methode] || !sessie.items.length) { wisSessie(); return toon("start"); }
-    herkomst = bewaard.herkomst || herkomst; padKapId = bewaard.padKapId || padKapId;
+    var b = bewaard;
+    try { sessie = herstelSessie(b); } catch (e) { sessie = null; wisSessie(); toon("start"); return melding("The saved session could not be restored, so it was discarded. Your word progress is kept."); }
+    herkomst = b.herkomst || herkomst; padKapId = b.padKapId || padKapId;
     begin(sessie.methode);
     $("overhoor").classList.remove("intro"); $("intro").hidden = true;
     volgende();
+    if (sessie.methode === "werkblad" && Array.isArray(b.wb)) { // ingevulde antwoorden terugzetten
+      [].forEach.call($("wbinhoud").querySelectorAll(".wbveld"), function (v, i) { var x = b.wb[i]; if (!Array.isArray(x)) return; v.value = String(x[0] == null ? "" : x[0]); if (x[1]) { v.readOnly = true; v.className = "wbveld goed"; } });
+      if (b.wbGecheckt) { sessie.wbGecheckt = true; sessie.wachtrij = sessie.items.filter(function (x, i) { var v = $("wbinhoud").querySelector("[data-wb='" + i + "']"); return v && !v.readOnly; }); $("wbklaar").hidden = false; teller(); }
+    }
   }
   function fout(it) { if (it.eersteKeer) { it.eersteKeer = false; sessie.fouten.push(it); return true; } return false; }
   // in Leren hangt de vraagvorm af van de stap van het woord: 1 = meerkeuze, 2 = typen
@@ -953,6 +1055,7 @@
   function knoppen() {
     var s = sessie, m = vorm(), f = s.fase;
     $("typen").hidden = !isTypen(m) || f === "kijk" || f === "paar";
+    if ($("typen").hidden && document.activeElement === $("antwoord")) $("antwoord").blur(); // anders vangt het verborgen veld de toetsen 1-4 en Enter
     $("antwoord").readOnly = f === "feedback" || f === "typo";
     $("mkopties").hidden = m !== "meerkeuze";
     $("controleer").hidden = !((isTypen(m) && f !== "typo") || f === "feedback");
@@ -993,16 +1096,16 @@
     s.fase = m === "spelling" ? "kijk" : "vraag";
     if (s.methode === "leren" && !it.gezien) { it.gezien = true; s.fase = inst.kopie ? "kopie" : "paar"; }
     var nieuw = s.fase === "paar" || s.fase === "kopie";
-    var luister = !nieuw && (m === "dictee" || it.tts); // vraag verborgen, alleen horen
+    var horen = m === "dictee" || it.tts, luister = !nieuw && horen && (!!it.seg || !!stemVoor("nb")); // vraag verborgen, alleen horen (niet als er niets te horen valt)
     $("kaart").classList.toggle("fc", m === "flashcards");
     $("vraag").textContent = luister ? "" : it.q;
     $("spreekvraag").className = "spreek spk-" + it.qCode;
     $("spreekvraag").hidden = luister;
     $("instructie").textContent = m === "dictee" && !it.tts ? "" : it.instructie;
-    $("vraagtaal").textContent = s.fase === "paar" ? "Learn this pair" : s.fase === "kopie" ? "New word: copy the answer" : luister ? (it.aNoors && it.a === it.q ? "Listen and type what you hear:" : it.tts ? "Listen and answer:" : "Listen and type the Norwegian word:") : it.vast ? "Give the answer:" : it.aKant === 0 ? "Translate into Norwegian:" : "Translate into " + taalNaam(it.taal) + ":";
+    $("vraagtaal").textContent = s.fase === "paar" ? "Learn this pair" : s.fase === "kopie" ? "New word: copy the answer" : luister ? (it.aNoors && it.a === it.q ? "Listen and type what you hear:" : it.tts ? "Listen and answer:" : "Listen and type the Norwegian word:") : horen && !nieuw ? "No Norwegian voice on this device, so read it instead and type it:" : it.vast ? "Give the answer:" : it.aKant === 0 ? "Translate into Norwegian:" : "Translate into " + taalNaam(it.taal) + ":";
     if (nieuw) toonAchter(it);
-    if (luister) { $("nogmaals").hidden = false; spreek(it.q, "nb"); }
-    else if (inst.uitspraak && it.qCode === "nb") spreek(it.q, "nb");
+    if (luister) { $("nogmaals").hidden = false; $("nogmaals").textContent = it.seg ? "Play this sentence from the recording" : "Play again"; speelVraag(it, true); }
+    else if (inst.uitspraak && it.qCode === "nb") spreek(it.q, "nb", true);
     if (it.tts && it.tekstId && LUISTER.some(function (t) { return t.id === it.tekstId; })) { $("heletekst").hidden = false; $("heletekst").dataset.tekst = it.tekstId; }
     if (m === "spelling") {
       $("spellingtoon").textContent = it.a; $("spellingtoon").hidden = false;
@@ -1020,7 +1123,7 @@
   // spelling: toontijd wordt korter naarmate je beter scoort
   function toontijd() { var s = sessie, n = s.goed + s.fout, p = n ? s.goed / n : 0; return !n ? 3000 : p >= .9 ? 2000 : p >= .8 ? 3000 : p >= .7 ? 4000 : p >= .6 ? 5000 : 6000; }
   function begintypen() { sessie.fase = "vraag"; $("spellingtoon").hidden = true; knoppen(); $("antwoord").focus(); }
-  function nadien(it) { if (inst.uitspraak && it.aCode === "nb") spreek(it.a, "nb"); }
+  function nadien(it) { if (inst.uitspraak && it.aCode === "nb") spreek(it.a, "nb", true); }
   function naNieuw() { var s = sessie; s.huidig.stap = 1; s.blok.splice(Math.min(2, s.blok.length), 0, s.huidig); volgende(); }
 
   // ---- beoordelen: goed / let (oranje, telt goed) / typo (bijna goed, zelf kiezen) / fout
@@ -1159,6 +1262,7 @@
     $("wbinhoud").innerHTML = html + (vorige ? "</div>" : "");
     $("wbopnieuw").hidden = $("wbklaar").hidden = true; $("wbcheck").hidden = false; $("wbmelding").textContent = "";
     teller();
+    s.wbGetekend = true;
     var eerste = $("wbinhoud").querySelector(".wbveld"); if (eerste) eerste.focus();
   }
   function wbCheck() {
@@ -1310,7 +1414,7 @@
   }
   function startItem(k, it) {
     padKapId = k.id; herkomst = "leerpadkap";
-    if (it.soort === "tekst") { luisterFocus = it.t.id; bronKeuze = "luister"; methodeKeuze = "luisteren"; return toon("luister"); }
+    if (it.soort === "tekst") { luisterFocus = it.t.id; bronKeuze = "luister"; methodeKeuze = "luisteren"; return toon("luister", padKapPad().concat([["Listen"]])); }
     if (it.soort === "quiz") {
       var alle = []; k.lijsten.forEach(function (l) { (l.woorden || []).forEach(function (w) { if (bruikbaar(w)) alle.push({ w: w, l: l }); }); });
       return start(schud(alle).slice(0, 20), "toets", (k.n ? "Chapter " + k.n : "Exam") + " quiz", k.id);
@@ -1320,13 +1424,14 @@
   }
   function padVerder(id) {
     var k = padKap(id); if (!k) return;
-    var a = kapItems(k), it = a.filter(function (x) { return !itemAf(x); })[0];
+    // tekst met ontbrekend audiobestand overslaan, anders blijft Continue daar eeuwig hangen
+    var a = kapItems(k), it = a.filter(function (x) { return !itemAf(x) && !(x.soort === "tekst" && luisterKapot[x.t.id]); })[0];
     if (!it) { padKapId = id; return toon("leerpadkap"); }
     startItem(k, it);
   }
 
   // ---------- luisteren ----------
-  var luisterFocus = null;
+  var luisterFocus = null, luisterKapot = {};
   function tijd(sec) { sec = Math.max(0, Math.round(sec || 0)); return Math.floor(sec / 60) + ":" + ("0" + sec % 60).slice(-2); }
   var KAPNAAM = { bergen: "Litt om Bergen", uttale: "Uttale (pronunciation)", fraser: "Vanlige fraser og svar" };
   function tekenLuister() {
@@ -1349,7 +1454,7 @@
     }).join("") || "<p>No audio yet.</p>";
     if (luisterFocus) { var f = $("lt_" + luisterFocus); if (f) setTimeout(function () { f.scrollIntoView({ block: "center" }); }, 0); }
   }
-  function stopAudio() { [].forEach.call(document.querySelectorAll("#luisterlijst audio"), function (a) { a.pause(); }); }
+  function stopAudio() { [].forEach.call(document.querySelectorAll("#luisterlijst audio"), function (a) { a.pause(); }); if (zinAudio) zinAudio.pause(); }
   function audioVan(el) { var b = el.closest("[data-lt]"); return b && b.querySelector("audio"); }
   var luisterEl = $("luisterlijst");
   luisterEl.addEventListener("click", function (e) {
@@ -1367,7 +1472,7 @@
     luisterEl.addEventListener(ev, function (e) {
       var a = e.target; if (a.tagName !== "AUDIO") return;
       var b = a.closest("[data-lt]"), id = b.dataset.lt, knop = b.querySelector("[data-audio=play]");
-      if (a.error) { b.querySelector(".tijd").textContent = "Audio file not found"; knop.textContent = "Play"; return; }
+      if (a.error) { luisterKapot[id] = true; b.querySelector(".tijd").textContent = "Audio file not found"; knop.textContent = "Play"; return; }
       knop.textContent = a.paused ? "Play" : "Pause"; knop.setAttribute("aria-label", knop.textContent);
       b.querySelector(".tijd").textContent = tijd(a.currentTime) + " / " + (a.duration ? tijd(a.duration) : "?");
       if (a.duration && document.activeElement !== b.querySelector(".zoek")) b.querySelector(".zoek").value = Math.round(1000 * a.currentTime / a.duration);
@@ -1451,7 +1556,7 @@
     else if (ds.padkap) { e.preventDefault(); padKapId = ds.padkap; toon("leerpadkap"); }
     else if (ds.verder) padVerder(ds.verder);
     else if (ds.paditem) { var k = padKap(padKapId); if (k) startItem(k, kapItems(k)[+ds.paditem]); }
-    else if (ds.wbtypo) wbTypo(+ds.wbtypo);
+    else if (ds.wbtypo) { wbTypo(+ds.wbtypo); bewaarSessie(); }
     else if (ds.moeilijk) { herkomst = "keuze"; start(moeilijkeParen(gekozenLijsten().length ? gekozenLijsten() : bronLijsten()), methodeKeuze === "werkblad" || !methodeKeuze ? "leren" : methodeKeuze, "difficult words"); }
     else if (ds.spreek) spreek(ds.spreek, ds.code);
     else if (ds.allesaan) { [].forEach.call(t.closest("details").querySelectorAll("input[type=checkbox]"), function (c) { c.checked = true; aangevinkt[c.value] = true; }); werkBalkBij(); }
@@ -1494,7 +1599,7 @@
     if (f === "kijk") begintypen();
     else if (f === "paar") naNieuw();
     else if (f === "feedback") volgende();
-    else if (isTypen(s.methode)) nakijken();
+    else if (isTypen(vorm())) nakijken();
   };
   $("antwoord").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("controleer").onclick(); } });
   // werkblad: actief veld onthouden voor de æøå-knoppen, Enter = volgend veld (laatste: nakijken)
@@ -1503,10 +1608,11 @@
     if (e.key !== "Enter" || !e.target.classList.contains("wbveld")) return;
     e.preventDefault();
     var v = [].slice.call($("wbinhoud").querySelectorAll(".wbveld:not([readonly])")), i = v.indexOf(e.target);
-    if (i >= 0 && i < v.length - 1) v[i + 1].focus(); else wbCheck();
+    if (i >= 0 && i < v.length - 1) v[i + 1].focus(); else { wbCheck(); bewaarSessie(); }
   });
-  $("wbcheck").onclick = wbCheck;
-  $("wbopnieuw").onclick = wbOpnieuw;
+  $("wbinhoud").addEventListener("change", function () { bewaarSessie(); }); // ingevuld werkblad overleeft herladen/weggaan
+  $("wbcheck").onclick = function () { wbCheck(); bewaarSessie(); };
+  $("wbopnieuw").onclick = function () { wbOpnieuw(); bewaarSessie(); };
   $("wbklaar").onclick = function () { if (sessie && sessie.methode === "werkblad") { if (!sessie.wbGecheckt) wbCheck(); einde(); } };
   document.addEventListener("keydown", function (e) {
     if (scherm !== "overhoor" || !sessie || e.target.id === "antwoord" || e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
@@ -1522,10 +1628,14 @@
   $("wistik").onclick = function () { wistIk(true); };
   $("wistikniet").onclick = function () { wistIk(false); };
   $("overslaan").onclick = overslaan;
-  $("spreekvraag").onclick = function () { spreek(sessie.huidig.q, sessie.huidig.qCode); };
-  $("nogmaals").onclick = function () { spreek(sessie.huidig.q, "nb"); $("antwoord").focus(); };
+  $("spreekvraag").onclick = function () { if (sessie && sessie.huidig) spreek(sessie.huidig.q, sessie.huidig.qCode); };
+  $("nogmaals").onclick = function () { if (sessie && sessie.huidig) speelVraag(sessie.huidig); $("antwoord").focus(); };
   $("stop").onclick = function () { if (confirm("Stop practising? You can continue later with Resume.")) { sessie = null; terug(); } };
-  $("wissel").onchange = function () { if (sessie) start(sessie.paren, this.value, sessie.naam); };
+  $("wissel").onchange = function () {
+    if (!sessie) return;
+    if (this.value === "dictee" && !stemVoor("nb")) { this.value = sessie.methode; return melding(GEEN_STEM); }
+    start(sessie.paren, this.value, sessie.naam);
+  };
   $("hervatknop").onclick = hervat;
   $("weggooien").onclick = function () { wisSessie(); werkBalkBij(); };
   $("vexport").onclick = function () {
@@ -1558,6 +1668,18 @@
   pasThemaToe();
   // luisterscherm pas tekenen als het opent
   if ("speechSynthesis" in window) { zoekStemmen(); speechSynthesis.onvoiceschanged = zoekStemmen; }
+
+  // vangnet: een onverwachte fout geeft een nette balk in plaats van een kapot scherm; voortgang staat al in de opslag
+  function vangnet() { $("foutbalk").hidden = false; }
+  window.addEventListener("error", function (e) { if (!e.target || e.target === window) vangnet(); });
+  window.addEventListener("unhandledrejection", vangnet);
+  $("foutbalk").onclick = function () {
+    this.hidden = true; $("toast").hidden = true;
+    try { bewaarSessie(); } catch (e) {}
+    sessie = null; $("overhoor").classList.remove("intro"); $("intro").hidden = true;
+    toon("start");
+  };
+  if (weggegooid.length) melding("Some saved data was damaged and has been reset (" + weggegooid.map(function (k) { return { "noors-instellingen": "settings", "noors-mijnlijsten": "my lists", "noors-geheugen": "word progress", "noors-sessie": "the paused session", "noors-pad": "study path" }[k] || k; }).join(", ") + "). Everything else is kept.");
   toon("start");
 })();
 </script>
