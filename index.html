@@ -251,6 +251,11 @@
   .moeilijk { color: var(--rood); font-size: 13px; }
   #hervat { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 12px; }
   #hervat span { flex: 1; min-width: 200px; }
+  #aibanner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 12px; }
+  #aibanner[hidden] { display: none; }
+  #aibanner span { flex: 1; min-width: 200px; }
+  #aibanner progress, #ai_pr { width: 160px; max-width: 100%; }
+  .licenties { padding-left: 18px; margin: 4px 0 0; } .licenties li { margin: 4px 0; overflow-wrap: anywhere; }
   #moeilijkblok { margin: 8px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
 
   @media (max-width: 560px) {
@@ -288,6 +293,7 @@
   <!-- STAP 1: BRON -->
   <section id="start">
     <div id="hervat" class="instructie" hidden><span id="hervattekst"></span><button class="knop" id="hervatknop">Resume</button><button class="knop grijs" id="weggooien">Discard</button></div>
+    <div id="aibanner" class="instructie" hidden><span>Get the natural Norwegian AI voice (≈93 MB, once, works offline).</span><progress id="aib_pr" max="1" hidden></progress><button class="knop" id="aib_dl">Download</button><button class="knop grijs" id="aib_weg">Not now</button></div>
     <h2>What do you want to practise?</h2>
     <div class="klein">Step 1 of 3: choose a source. Then you choose how you want to practise, and which lists.</div>
     <div class="tegelrij" id="brontegels"></div>
@@ -433,6 +439,8 @@
     <label class="instelling"><div>Pronounce automatically<span class="klein">Reads Norwegian words aloud as soon as they appear.</span></div><input type="checkbox" class="schakel" id="i_uitspraak"></label>
     <div class="instelling"><div>Norwegian voice<span class="klein">Used for every Norwegian word.</span></div>
       <div class="stemkeuze"><select id="i_stem_nb" aria-label="Norwegian voice"></select><button class="knop grijs" id="test_nb">Test</button></div></div>
+    <div class="instelling"><div>AI voice<span class="klein" id="ai_info"></span></div>
+      <div class="stemkeuze"><progress id="ai_pr" max="1" hidden></progress><button class="knop grijs" id="ai_dl" hidden></button></div></div>
     <div class="instelling"><div>English voice<span class="klein">Used for the English side.</span></div>
       <div class="stemkeuze"><select id="i_stem_en" aria-label="English voice"></select><button class="knop grijs" id="test_en">Test</button></div></div>
     <p class="klein" id="istem"></p>
@@ -445,6 +453,16 @@
     <div class="instelling"><div>Save or move progress<span class="klein">For every word the app keeps how often you had it right and wrong, plus your study path (only in this browser). Export it as a file to keep it or move it to another device.</span><span class="klein" id="vmelding"></span></div>
       <div class="knoppen" style="margin-top:0"><button class="knop grijs" id="vexport">Export</button><button class="knop grijs" id="vimport">Import</button><button class="knop grijs" id="vwis">Erase progress</button><input type="file" id="vbestand" accept=".json,application/json" hidden></div></div>
     <div class="instelling"><div>Explanation per method<span class="klein">Show the short explanation before each method again.</span></div><button class="knop grijs" id="uitlegterug">Show again</button></div>
+    </div>
+    <div class="isectie" id="over"><h3>About &amp; licenses</h3>
+    <p class="klein">The AI voice runs entirely in your browser with these open-source parts (license texts in vendor/piper/LICENSES, exact versions in <a href="vendor/piper/VERSIONS.txt">VERSIONS.txt</a>):</p>
+    <ul class="klein licenties">
+      <li><a href="https://github.com/rhasspy/piper">Piper</a> text-to-speech, MIT (<a href="vendor/piper/LICENSES/piper-MIT.txt">license</a>)</li>
+      <li>Voice model "nvcc" (no_NO-nvcc-medium, speaker KON), trained on Språkbanken recordings, CC0 (<a href="https://www.nb.no/sprakbanken/en/resource-catalogue/oai-nb-no-sbr-75/">dataset</a>, <a href="vendor/piper/LICENSES/nvcc-model-card-CC0.txt">model card</a>)</li>
+      <li><a href="https://github.com/microsoft/onnxruntime">onnxruntime-web</a> 1.31.1, MIT (<a href="vendor/piper/LICENSES/onnxruntime-web-MIT.txt">license</a>)</li>
+      <li>piper-phonemize WebAssembly build (@diffusionstudio/piper-wasm 1.0.0), MIT (<a href="vendor/piper/LICENSES/piper-phonemize-MIT.txt">license</a>)</li>
+      <li><a href="https://github.com/espeak-ng/espeak-ng">espeak-ng</a>, GPL-3.0 (<a href="vendor/piper/LICENSES/espeak-ng-GPL-3.0.txt">license</a>): version 1.52-dev, the rhasspy fork at commit <a href="https://github.com/rhasspy/espeak-ng/tree/8593723f10cfd9befd50de447f14bf0a9d2a14a4">8593723</a> (source code). Only the Norwegian data files are included.</li>
+    </ul>
     </div>
     </div>
   </section>
@@ -512,7 +530,7 @@
     return l.filter(geldigeLijst).map(function (x) { return { id: x.id, titel: String(x.titel == null ? "Untitled" : x.titel), woorden: x.woorden.filter(function (w) { return Array.isArray(w) && w[0] != null && w[1] != null; }).map(function (w) { return [String(w[0]), String(w[1])]; }) }; });
   }
   function bewaarMijn(l) { return zet(OPSLAG, JSON.stringify(l)); }
-  var inst = { thema: "auto", kopie: true, overslaan: false, goedrekenen: false, uitspraak: false, overtypen: false, rondes: 1, nafout: "2500", richting: "no-nl", uitlegWeg: {}, stem: { nb: "", en: "" } };
+  var inst = { thema: "auto", kopie: true, overslaan: false, goedrekenen: false, uitspraak: false, overtypen: false, rondes: 1, nafout: "2500", richting: "no-nl", uitlegWeg: {}, stem: { nb: "", en: "" }, aiBannerWeg: false };
   (function () {
     var o = lees(INST, isObj); if (!o) return;
     for (var k in inst) if (k in o && typeof o[k] === typeof inst[k] && (typeof inst[k] !== "object" || isObj(o[k]))) inst[k] = o[k];
@@ -650,8 +668,13 @@
   var wachtend = null; // Chrome laadt de stemmen pas ~1 s na het openen: tot dan wachten in plaats van "geen stem" melden
   var geenStemGemeld = false;
   function geenStem(auto) { if (auto && geenStemGemeld) return; geenStemGemeld = true; melding(GEEN_STEM); } // automatisch voorlezen: maar één keer melden, niet bij elk woord
+  // Noors: AI-stem als die gedownload en gekozen is, anders (of bij een fout) de apparaatstem; Engels altijd de apparaatstem
   function spreek(tekst, code, auto) {
     code = code || "nb";
+    if (code === "nb" && aiActief()) return spreekAI(tekst, auto);
+    return spreekApparaat(tekst, code, auto);
+  }
+  function spreekApparaat(tekst, code, auto) {
     var stem = stemVoor(code);
     if (!stem && "speechSynthesis" in window && !(speechSynthesis.getVoices() || []).length && !wachtend) {
       wachtend = { tekst: tekst, code: code };
@@ -673,6 +696,7 @@
       info.events.push("retry:" + (lok ? lok.name : "lang only")); try { speechSynthesis.speak(u2); } catch (x) {}
     };
     if (zinAudio) zinAudio.pause();
+    aiStil();
     try { speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) { info.events.push("throw:" + e.message); return false; }
     return true;
   }
@@ -694,6 +718,7 @@
     if (!it.seg || zinKapot[it.seg.src]) return terugval(it, auto);
     var a = zinSpeler(), seg = it.seg;
     try { speechSynthesis.cancel(); } catch (e) {}
+    aiStil();
     a.__seg = seg; a.__mislukt = function () { zinKapot[seg.src] = 1; terugval(it, auto); };
     var naarStart = function () { try { a.currentTime = seg.start; } catch (e) {} };
     if (a.getAttribute("src") !== seg.src) { a.src = seg.src; a.addEventListener("loadedmetadata", naarStart, { once: true }); } else { a.pause(); naarStart(); }
@@ -706,6 +731,129 @@
     return false;
   }
   function spreekKnop(tekst, code) { return "<button class='spreek spk-" + code + "' data-spreek='" + esc(tekst) + "' data-code='" + code + "' aria-label='Pronounce' title='Pronounce'>" + SPK + "</button>"; }
+
+  // ---------- AI-stem (Piper "nvcc", spreker KON) ----------
+  // Pas bij gebruik geladen, in een Web Worker; de bestanden staan na de download in Cache Storage (werkt offline).
+  // Op file:// werken Worker/wasm/Cache Storage niet betrouwbaar: dan blijft alles stil bij de apparaatstem.
+  // Nieuwe modelbestanden? Verhoog de versie in de cache-naam, dan wordt de oude download opgeruimd.
+  var AI = { cache: "krydder-ai-voice-v1", base: new URL("vendor/piper/", location.href).href, speaker: 3,
+    files: { "ort.wasm.bundle.min.mjs": 77024, "ort-wasm-simd-threaded.wasm": 14848852, "piper_phonemize.mjs": 117043, "piper_phonemize.wasm": 635212, "piper_phonemize.data": 651599, "no_NO-nvcc-medium.onnx.json": 5397, "no_NO-nvcc-medium.onnx": 76770227 } };
+  var AI_NAAM = "AI voice (female)", AI_MB = "≈93 MB", ONLINE = "https://nreuvekamp-creator.github.io/krydder/";
+  var aiKan = location.protocol !== "file:" && !!window.isSecureContext && "caches" in window && "Worker" in window && typeof WebAssembly === "object" && typeof TransformStream === "function";
+  var ai = { klaar: false, bezig: false, pct: 0, fout: "" }, aiWerkerP = null, aiId = 0, aiWacht = {}, aiLRU = new Map(), aiSpeler = null, aiBeurt = 0;
+  window.__ai = function () { return { kan: aiKan, klaar: ai.klaar, bezig: ai.bezig, pct: ai.pct, fout: ai.fout, actief: aiActief(), lru: aiLRU.size }; }; // voor tests
+  function aiActief() { return aiKan && ai.klaar && (inst.stem.nb === "ai" || !inst.stem.nb); }
+  function heeftNoorseStem() { return aiActief() || !!stemVoor("nb"); }
+  function aiNamen() { return Object.keys(AI.files); }
+  if (aiKan) {
+    caches.keys().then(function (ks) { ks.forEach(function (k) { if (/^krydder-ai-voice-/.test(k) && k !== AI.cache) caches.delete(k); }); })
+      .then(function () { return caches.open(AI.cache); })
+      .then(function (c) { return Promise.all(aiNamen().map(function (n) { return c.match(AI.base + n); })); })
+      .then(function (rs) { ai.klaar = rs.every(Boolean); aiTeken(); if (ai.klaar && scherm === "methode") tekenMethodes(); })
+      .catch(function () { aiKan = false; aiTeken(); });
+  }
+  // het worker-script zelf: vers van het net (kan veranderen), offline uit de cache
+  function aiWerker() {
+    if (aiWerkerP) return aiWerkerP;
+    var url = AI.base + "tts-worker.js";
+    var net = navigator.onLine === false ? Promise.reject(new Error("offline")) : fetch(url, { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      var kopie = r.clone(); caches.open(AI.cache).then(function (c) { return c.put(url, kopie); }).catch(function () {});
+      return r;
+    });
+    return aiWerkerP = net.catch(function () { return caches.open(AI.cache).then(function (c) { return c.match(url); }); })
+      .then(function (r) { if (!r) throw new Error("voice not available offline"); return r.text(); })
+      .then(function (js) {
+        var w = new Worker(URL.createObjectURL(new Blob([js], { type: "text/javascript" })), { type: "module" });
+        w.onmessage = function (e) {
+          var m = e.data, h = aiWacht[m.id]; if (!h) return;
+          if (m.type === "progress") { if (h.voortgang) h.voortgang(m); return; }
+          delete aiWacht[m.id];
+          if (m.type === "error") h.nee(new Error(m.message)); else h.ok(m);
+        };
+        w.onerror = function (e) { if (e.preventDefault) e.preventDefault(); aiStop("worker: " + (e.message || "error")); };
+        return w;
+      })
+      .catch(function (e) { aiWerkerP = null; throw e; });
+  }
+  function aiStuur(type, extra, voortgang) {
+    return aiWerker().then(function (w) { return new Promise(function (ok, nee) {
+      var id = ++aiId; aiWacht[id] = { ok: ok, nee: nee, voortgang: voortgang };
+      w.postMessage(Object.assign({ id: id, type: type, opts: AI }, extra || {}));
+    }); });
+  }
+  function aiStop(reden) {
+    if (aiWerkerP) aiWerkerP.then(function (w) { w.terminate(); }, function () {});
+    aiWerkerP = null;
+    var w = aiWacht; aiWacht = {}; for (var k in w) w[k].nee(new Error(reden));
+  }
+  function aiDownload() {
+    if (!aiKan || ai.klaar || ai.bezig) return;
+    ai.bezig = true; ai.pct = 0; ai.fout = ""; aiTeken();
+    aiStuur("download", null, function (m) { ai.pct = m.loaded / m.total; aiTeken(); })
+      .then(function () {
+        ai.klaar = true; ai.pct = 1; inst.stem.nb = "ai"; bewaarInst();
+        if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {}); // minder kans dat de browser de download opruimt
+      })
+      .catch(function (e) { ai.fout = "Download failed (" + e.message + "). Check the connection and try again; what was already downloaded is kept."; })
+      .then(function () { ai.bezig = false; aiTeken(); if (scherm === "instellingen") tekenInst(); if (scherm === "methode") tekenMethodes(); });
+  }
+  function aiVerwijder() {
+    aiStop("removed"); aiStil();
+    aiLRU.forEach(function (u) { URL.revokeObjectURL(u); }); aiLRU.clear();
+    caches.delete(AI.cache).catch(function () {}).then(function () {
+      ai.klaar = false; ai.pct = 0; if (inst.stem.nb === "ai") { inst.stem.nb = ""; bewaarInst(); }
+      aiTeken(); if (scherm === "instellingen") tekenInst();
+    });
+  }
+  // stopt de AI-stem en laat een nog lopende synthese niet meer afspelen
+  function aiStil() { aiBeurt++; if (aiSpeler) aiSpeler.pause(); if ($("toasttekst").textContent === "Preparing voice…") $("toast").hidden = true; }
+  var STIL = "data:audio/wav;base64,UklGRsQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+  function spreekAI(tekst, auto) {
+    var t = spreekTekst(tekst);
+    if (zinAudio) zinAudio.pause();
+    try { speechSynthesis.cancel(); } catch (e) {}
+    aiStil();
+    var beurt = aiBeurt, info = window.__laatsteStem = { tekst: t, stem: AI_NAAM, lang: "nb-NO", lokaal: true, ai: true, events: [] };
+    // iPhone: alleen een element dat binnen een tik al eens speelde, mag straks (na het rekenen) zonder tik spelen
+    if (!aiSpeler) { aiSpeler = new Audio(); aiSpeler.src = STIL; var p0 = aiSpeler.play(); if (p0 && p0.catch) p0.catch(function () {}); }
+    var speel = function (url) {
+      if (beurt !== aiBeurt) return;
+      if ($("toasttekst").textContent === "Preparing voice…") $("toast").hidden = true;
+      aiSpeler.src = url; info.events.push("start");
+      var p = aiSpeler.play(); if (p && p.catch) p.catch(function (e) { info.events.push("play-error:" + e.name); });
+    };
+    if (aiLRU.has(t)) { var u = aiLRU.get(t); aiLRU.delete(t); aiLRU.set(t, u); info.events.push("cache"); speel(u); return true; }
+    var klaar = false, val = function (reden) { // terugval op de apparaatstem
+      if (klaar) return; klaar = true; info.events.push(reden);
+      if (beurt === aiBeurt) spreekApparaat(tekst, "nb", auto);
+    };
+    var traag = setTimeout(function () { if (!klaar && beurt === aiBeurt) { info.events.push("preparing"); melding("Preparing voice…"); } }, 3000);
+    var nood = setTimeout(function () { val("timeout"); }, 30000);
+    aiStuur("speak", { text: t }).then(function (m) {
+      clearTimeout(traag); clearTimeout(nood);
+      var url = URL.createObjectURL(new Blob([m.wav], { type: "audio/wav" }));
+      aiLRU.set(t, url);
+      if (aiLRU.size > 200) { var oud = aiLRU.keys().next().value; URL.revokeObjectURL(aiLRU.get(oud)); aiLRU.delete(oud); }
+      info.ms = Math.round(m.ms); info.seconden = m.seconds;
+      if (!klaar) { klaar = true; speel(url); }
+    }).catch(function (e) { clearTimeout(traag); clearTimeout(nood); if ($("toasttekst").textContent === "Preparing voice…") $("toast").hidden = true; val("ai-error:" + e.message); });
+    return true;
+  }
+  // voor tests en de check-wav's: de WAV van de site-pijplijn als base64
+  window.__aiWav = function (tekst) { return aiStuur("speak", { text: spreekTekst(tekst) }).then(function (m) { var b = new Uint8Array(m.wav), s = ""; for (var i = 0; i < b.length; i += 32768) s += String.fromCharCode.apply(null, b.subarray(i, i + 32768)); return { b64: btoa(s), seconds: m.seconds, ms: m.ms }; }); };
+  function aiTeken() {
+    var info = $("ai_info"), knop = $("ai_dl"), pr = $("ai_pr"), ban = $("aibanner");
+    ban.hidden = !aiKan || ai.klaar || inst.aiBannerWeg && !ai.bezig;
+    $("aib_pr").hidden = pr.hidden = !ai.bezig; $("aib_pr").value = pr.value = ai.pct;
+    $("aib_dl").disabled = ai.bezig; $("aib_dl").textContent = ai.bezig ? "Downloading… " + Math.round(ai.pct * 100) + "%" : "Download";
+    $("aib_weg").hidden = ai.bezig;
+    knop.hidden = !aiKan; knop.disabled = ai.bezig;
+    if (!aiKan) info.innerHTML = "A natural Norwegian AI voice is available on the <a href='" + ONLINE + "'>online version</a> or via a local server.";
+    else if (ai.klaar) { info.textContent = "Downloaded ✓ (stored in this browser, works offline)."; knop.textContent = "Remove"; }
+    else if (ai.bezig) { info.textContent = "Downloading… " + Math.round(ai.pct * 100) + "% of " + AI_MB + ". You can keep practising."; knop.textContent = "Downloading…"; }
+    else { info.textContent = ai.fout || "Natural Norwegian voice (female). Downloaded once, then it works offline."; knop.textContent = "Download AI voice (" + AI_MB + ", use Wi-Fi)"; }
+  }
 
   // ---------- bronnen ----------
   var BRONNEN = [
@@ -812,7 +960,7 @@
   // ---------- stap 2: methode ----------
   var VOLGORDE = ["leren", "spelling", "toets", "dictee", "meerkeuze", "flashcards", "werkblad"];
   function tekenMethodes() {
-    var ls = bronLijsten(), stem = !!stemVoor("nb"), wb = ls.some(werkbladLijst);
+    var ls = bronLijsten(), stem = heeftNoorseStem(), wb = ls.some(werkbladLijst);
     $("methodekop").textContent = bronNaam(bronKeuze) + ": how do you want to practise?";
     var tegels = bronKeuze === "luister" && LUISTER.length ? ["<button class='tegel' data-methode='luisteren'><b>Listen to texts</b><span class='klein'>Play the book audio per chapter, with the text to read along when available</span></button>"] : [];
     if (bronKeuze !== "luister" || ls.length) tegels = tegels.concat(VOLGORDE.map(function (m) {
@@ -873,7 +1021,7 @@
     toonTaal();
   }
   function oefenHTML(id, label, lijsten, hoofd) {
-    var dict = !!stemVoor("nb"), kanMK = lijsten.reduce(function (n, l) { return n + (l.woorden || []).filter(bruikbaar).length; }, 0) >= 4, wb = lijsten.some(werkbladLijst);
+    var dict = heeftNoorseStem(), kanMK = lijsten.reduce(function (n, l) { return n + (l.woorden || []).filter(bruikbaar).length; }, 0) >= 4, wb = lijsten.some(werkbladLijst);
     var uit = { dictee: dict ? "" : "Not available: no Norwegian voice on this device", meerkeuze: kanMK ? "" : "Needs at least 4 words", werkblad: wb ? "" : "Only for exercise lists" };
     if (uit[hoofd]) { label = label.replace(METHODES[hoofd], METHODES.leren); hoofd = "leren"; } // knoptekst moet zeggen wat er echt start
     return "<button class='knop' id='" + id + "' data-oefen='" + hoofd + "'>" + esc(label) + "</button><details class='uitklap'><summary class='knop' aria-label='Choose a practice method'>&#9662;</summary><div class='menu" + (id === "begin" ? " boven" : "") + "'>" +
@@ -957,7 +1105,7 @@
     return it;
   }
   function oefen(methode, lijsten) {
-    if (methode === "dictee" && !stemVoor("nb")) return melding(GEEN_STEM);
+    if (methode === "dictee" && !heeftNoorseStem()) return melding(GEEN_STEM);
     if (methode === "werkblad") lijsten = lijsten.filter(werkbladLijst);
     var paren = [];
     lijsten.forEach(function (l) { gekozenWoorden(l).forEach(function (w) { paren.push({ w: w, l: l }); }); });
@@ -1096,7 +1244,7 @@
     s.fase = m === "spelling" ? "kijk" : "vraag";
     if (s.methode === "leren" && !it.gezien) { it.gezien = true; s.fase = inst.kopie ? "kopie" : "paar"; }
     var nieuw = s.fase === "paar" || s.fase === "kopie";
-    var horen = m === "dictee" || it.tts, luister = !nieuw && horen && (!!it.seg || !!stemVoor("nb")); // vraag verborgen, alleen horen (niet als er niets te horen valt)
+    var horen = m === "dictee" || it.tts, luister = !nieuw && horen && (!!it.seg || heeftNoorseStem()); // vraag verborgen, alleen horen (niet als er niets te horen valt)
     $("kaart").classList.toggle("fc", m === "flashcards");
     $("vraag").textContent = luister ? "" : it.q;
     $("spreekvraag").className = "spreek spk-" + it.qCode;
@@ -1343,7 +1491,7 @@
 
   // ---------- leerpad ----------
   function extraLijst(l) { return /\((provisional|voorlopig)\)|AI-translated|\bAI\b/i.test(l.titel) || !!l.ai || /^Gramm/i.test(l.bronGroep || ""); }
-  function aanbevolen(l) { return bronVan(l) === "luister" ? (l.tts && stemVoor("nb") ? "dictee" : "toets") : "leren"; }
+  function aanbevolen(l) { return bronVan(l) === "luister" ? (l.tts && heeftNoorseStem() ? "dictee" : "toets") : "leren"; }
   var padCache = null;
   function padKaps() {
     if (padCache) return padCache;
@@ -1454,7 +1602,7 @@
     }).join("") || "<p>No audio yet.</p>";
     if (luisterFocus) { var f = $("lt_" + luisterFocus); if (f) setTimeout(function () { f.scrollIntoView({ block: "center" }); }, 0); }
   }
-  function stopAudio() { [].forEach.call(document.querySelectorAll("#luisterlijst audio"), function (a) { a.pause(); }); if (zinAudio) zinAudio.pause(); }
+  function stopAudio() { [].forEach.call(document.querySelectorAll("#luisterlijst audio"), function (a) { a.pause(); }); if (zinAudio) zinAudio.pause(); if (aiSpeler) aiSpeler.pause(); }
   function audioVan(el) { var b = el.closest("[data-lt]"); return b && b.querySelector("audio"); }
   var luisterEl = $("luisterlijst");
   luisterEl.addEventListener("click", function (e) {
@@ -1523,15 +1671,21 @@
     document.querySelector("input[name=rondes][value='" + inst.rondes + "']").checked = true;
     document.querySelector("input[name=nafout][value='" + inst.nafout + "']").checked = true;
     ["nb", "en"].forEach(function (c) {
-      var pas = stemmenVoor(c), st = stemVoor(c), sel = $("i_stem_" + c);
-      sel.innerHTML = pas.length ? pas.map(function (x) { return "<option value='" + esc(stemId(x)) + "'" + (st === x ? " selected" : "") + ">" + esc(x.name + " (" + x.lang + ")") + "</option>"; }).join("") : "<option value=''>None installed</option>";
-      sel.disabled = !pas.length; $("test_" + c).disabled = !pas.length;
+      var pas = stemmenVoor(c), st = stemVoor(c), sel = $("i_stem_" + c), metAI = c === "nb" && aiKan && ai.klaar, aan = metAI && aiActief();
+      var opties = pas.map(function (x) { var n = x.name + " (" + x.lang + ")"; return "<option value='" + esc(stemId(x)) + "'" + (!aan && st === x ? " selected" : "") + ">" + esc(metAI ? "Device voice (" + n + ")" : n) + "</option>"; });
+      if (metAI) opties.unshift("<option value='ai'" + (aan ? " selected" : "") + ">" + AI_NAAM + " – Krydder, works offline</option>");
+      sel.innerHTML = opties.length ? opties.join("") : "<option value=''>None installed</option>";
+      sel.disabled = !opties.length; $("test_" + c).disabled = !opties.length;
     });
-    var nb = stemVoor("nb"), en = stemVoor("en");
-    $("istem").innerHTML = (nb ? "Now using <b>" + esc(nb.name) + "</b> (" + esc(nb.lang) + ") for Norwegian" : "") + (nb && en ? " and " : "") + (en ? "<b>" + esc(en.name) + "</b> (" + esc(en.lang) + ") for English." : nb ? "." : "") + (nb ? "" : (en ? "<br>" : "") + GEEN_STEM);
+    var nb = aiActief() ? { name: AI_NAAM, lang: "works offline" } : stemVoor("nb"), en = stemVoor("en");
+    $("istem").innerHTML = (nb ? "Now using <b>" + esc(nb.name) + "</b> (" + esc(nb.lang) + ") for Norwegian" : "") + (nb && en ? " and " : "") + (en ? "<b>" + esc(en.name) + "</b> (" + esc(en.lang) + ") for English." : nb ? "." : "") + (nb ? "" : (en ? "<br>" : "") + GEEN_STEM + (aiKan ? " Or download the AI voice above." : ""));
+    aiTeken();
   }
   $("test_nb").onclick = function () { spreek("Hei! Jeg heter Nora.", "nb"); };
   $("test_en").onclick = function () { spreek("Hello", "en"); };
+  $("ai_dl").onclick = function () { if (ai.klaar) aiVerwijder(); else aiDownload(); };
+  $("aib_dl").onclick = aiDownload;
+  $("aib_weg").onclick = function () { inst.aiBannerWeg = true; bewaarInst(); aiTeken(); };
   $("instellingen").addEventListener("change", function (e) {
     var t = e.target;
     if (t.name === "thema") { inst.thema = t.value; pasThemaToe(); }
@@ -1633,7 +1787,7 @@
   $("stop").onclick = function () { if (confirm("Stop practising? You can continue later with Resume.")) { sessie = null; terug(); } };
   $("wissel").onchange = function () {
     if (!sessie) return;
-    if (this.value === "dictee" && !stemVoor("nb")) { this.value = sessie.methode; return melding(GEEN_STEM); }
+    if (this.value === "dictee" && !heeftNoorseStem()) { this.value = sessie.methode; return melding(GEEN_STEM); }
     start(sessie.paren, this.value, sessie.naam);
   };
   $("hervatknop").onclick = hervat;
@@ -1668,6 +1822,7 @@
   pasThemaToe();
   // luisterscherm pas tekenen als het opent
   if ("speechSynthesis" in window) { zoekStemmen(); speechSynthesis.onvoiceschanged = zoekStemmen; }
+  aiTeken();
 
   // vangnet: een onverwachte fout geeft een nette balk in plaats van een kapot scherm; voortgang staat al in de opslag
   function vangnet() { $("foutbalk").hidden = false; }

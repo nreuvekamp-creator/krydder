@@ -1,0 +1,34 @@
+Krydder AI voice: exact versions of the self-hosted files (no CDN; everything here works offline)
+
+onnxruntime-web 1.31.1 (npm, MIT)
+  ort.wasm.bundle.min.mjs, ort-wasm-simd-threaded.wasm  (unchanged from dist/)
+  npm integrity sha512-5GeH+bWQ+HxM10z7erGlsWqryrwMbSvm/1tkIsKTT48g0fI19VXVVC435t4t7VsPdSQeS7NmuZPXrQ73k82URw==
+
+@diffusionstudio/piper-wasm 1.0.0 (npm, MIT): piper-phonemize compiled to WebAssembly
+  built from wide-video/piper-phonemize (commit bfc2e75) with espeak-ng from rhasspy/espeak-ng
+  piper_phonemize.wasm  unchanged from build/
+  piper_phonemize.mjs   build/piper_phonemize.js turned into an ES module; the data-package list
+                        trimmed to the 6 files Norwegian needs (see below)
+  piper_phonemize.data  repacked: phontab, phonindex, phondata, intonations, no_dict, lang/gmq/nb
+                        (651,599 bytes instead of 18,077,249). Checked: phoneme ids identical to the
+                        full data for all 4,677 Norwegian strings in the app.
+  npm integrity sha512-4Hgh7wJ1PuGEVgVi1CpducESnyXwjFRJN4zXjYRpxgquM+Zh6Eqq8ZaiGpCKm4yXvT1Y2SPQXbv0dEckFD9NaQ==
+
+espeak-ng 1.52-dev (GPL-3.0), rhasspy fork, commit 8593723f10cfd9befd50de447f14bf0a9d2a14a4
+  source: https://github.com/rhasspy/espeak-ng/tree/8593723f10cfd9befd50de447f14bf0a9d2a14a4
+  upstream: https://github.com/espeak-ng/espeak-ng
+
+Piper voice no_NO-nvcc-medium (rhasspy/piper-voices, MIT code; dataset Språkbanken nb.no sbr-75, CC0)
+  no_NO-nvcc-medium.onnx, no_NO-nvcc-medium.onnx.json  (unchanged); Krydder uses speaker 3 (KON, female)
+  https://huggingface.co/rhasspy/piper-voices/tree/main/no/no_NO/nvcc/medium
+
+tts-worker.js: Krydder's own code (phonemize + onnxruntime in a Web Worker, Cache Storage)
+
+SHA-256
+51bd7168175767324ab0acfcfc4ca94a096a3826e3ebac9ccc4f195eb865f8dd  ort.wasm.bundle.min.mjs
+4b884c203b0fa48d057be3332c65513ff85aa3c5bddd6946acc0fab7ecda001d  ort-wasm-simd-threaded.wasm
+7cdf9c5b9271179a9e78d29d57858316b65b44a475be9c454202004eccab0599  piper_phonemize.mjs
+b777cd107a91d2bcc6a1ea46f2c26a662a7407394fe84589198aeaa83dd7a9d6  piper_phonemize.wasm
+f8ec651df47cf1442b07a99c8d0198feaea9afd6ecf0b84d7cdff61939a4a5c6  piper_phonemize.data
+3f51702946d9544898440a1a66906155661a9d680ee103130ff68f73360b512e  no_NO-nvcc-medium.onnx
+98410e911e5a9076ac4677a79b08b20f98c54f550c4388e29978f6bafa32b83d  no_NO-nvcc-medium.onnx.json
