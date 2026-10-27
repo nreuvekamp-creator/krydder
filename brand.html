@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Krydder brandbook</title>
-<meta name="description" content="Het merkboek van Krydder, een oefenapp voor Noors: verhaal, logo, kleur, typografie, onderdelen en iconen.">
+<meta name="description" content="Het merkboek van Krydder, een oefenapp voor Noors: verhaal, logo, acht kruiden en hun krijtjes, typografie, onderdelen en iconen.">
 <link rel="icon" href="brand/krydder-favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,9 +14,10 @@
 :root{
   --paper:#f7f2e8; --ink:#2a2420; --soft:#5a514a; --glass:#ebe3d3; --wood:#b98a5e; --line:#e2d9c8;
   --board:#55644e; --chalk:#f7f2e8;
-  --kanel:#9c4f2c; --kardemomme:#8f9c7a; --safran:#d29a2f; --pepper:#3b3633; --nellik:#6a3546; --dill:#5c7a35;
-  --chalk-kanel:#fad5c2; --chalk-kardemomme:#e1ead0; --chalk-safran:#f9dd9a; --chalk-pepper:#e0dcd8; --chalk-nellik:#f7d5e0; --chalk-dill:#d6eab4;
+  --kanel:#9c4f2c; --kardemomme:#8f9c7a; --safran:#d29a2f; --pepper:#3b3633; --nellik:#6a3546; --dill:#5c7a35; --paprika:#b0303c; --einer:#4e5a8a;
+  --chalk-kanel:#ffd3ac; --chalk-kardemomme:#dcedc9; --chalk-safran:#f5e59e; --chalk-pepper:#fff0fd; --chalk-nellik:#f8cdfd; --chalk-dill:#a0ead4; --chalk-paprika:#ffd0cc; --chalk-einer:#d2d9ff;
   --water:#5f8296; --chalk-water:#bbe0f8; --wet:rgba(38,78,112,.34);
+  --good:#3f7a3a; --bad:#a3332b;
   --f-board:"Fraunces",Georgia,serif; --f-ui:"Schibsted Grotesk",system-ui,sans-serif;
   --r-btn:6px; --r-board:12px; --r-jar:22px;
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='12'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .42  0 0 0 0 .36  0 0 0 0 .3  0 0 0 -2.2 .95'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
@@ -100,7 +101,14 @@ p+p{margin-top:16px}
 .dl{display:flex;gap:12px 28px;flex-wrap:wrap;margin-top:24px;font-weight:700}
 
 /* kleur */
-.spices{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.spices{display:grid;grid-template-columns:repeat(4,1fr);gap:28px 24px}
+.sp .why{font-size:15px;margin-top:6px;color:var(--ink)}
+.fb{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.fb div{border-radius:var(--r-btn);padding:16px 18px;font-size:16px;line-height:1.35}
+.fb b{display:block;font-size:22px}
+.rulelist{list-style:none;margin-top:16px;max-width:44em}
+.rulelist li{padding:12px 0;border-bottom:1px solid var(--line)}
+.rulelist b{font-weight:700}
 .sp .duo{display:grid;grid-template-columns:1fr 1fr;height:132px;border-radius:var(--r-btn);overflow:hidden}
 .sp .duo div{display:flex;flex-direction:column;justify-content:flex-end;padding:12px 14px;font-size:14px;line-height:1.3}
 .sp .duo div:last-child{background:var(--board)}
@@ -147,7 +155,15 @@ td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
 .chap .n{font-family:var(--f-board);font-size:24px}
 .chap svg.l{width:100%;height:22px;overflow:visible}
 .chap .ok{width:30px;height:30px}
-.chap.now .t{color:var(--chalk-safran)}
+.chap.now .t,.chap.now .n{font-weight:700}
+.chap .n{position:relative}
+.chap .arr{position:absolute;right:calc(100% + 4px);top:50%;width:24px;height:16px;margin-top:-8px}
+.methods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.methods div{background:#fffdf8;border:1px solid var(--line);border-radius:8px;padding:22px 24px}
+.methods b{display:block;font-family:var(--f-board);font-weight:600;font-size:28px;line-height:1.2}
+.methods em{font-style:normal;font-size:15px;font-weight:700;color:var(--kanel)}
+.methods span{font-size:16px;color:var(--soft)}
+.more{display:inline-block;margin-top:16px;font-weight:700;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px}
 .cta{display:flex;align-items:center;gap:28px;margin-top:36px;flex-wrap:wrap}
 .btn{display:inline-block;background:var(--chalk);color:var(--ink);font-weight:700;font-size:22px;line-height:1.2;padding:18px 36px;border-radius:var(--r-btn);white-space:nowrap;border:0;font-family:inherit}
 .link{font-weight:700;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px;white-space:nowrap}
@@ -158,7 +174,7 @@ td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
 .q{font-family:var(--f-board);font-weight:500;font-size:clamp(52px,8vw,88px);line-height:1;margin-top:16px}
 .tdec{margin-top:28px;font-size:19px}
 .tdec b{font-family:var(--f-board);font-weight:500;font-size:38px;display:block;line-height:1.15;margin-bottom:10px}
-.tdec u{text-decoration-color:var(--chalk-safran);text-decoration-thickness:3px;text-underline-offset:6px}
+.tdec u{text-decoration-color:var(--chalk-water);text-decoration-thickness:3px;text-underline-offset:6px}
 .pair2{display:flex;gap:20px;align-items:center;margin-top:28px;isolation:auto;flex-wrap:wrap}
 .kobtn,.wetbtn{display:inline-flex;align-items:center;justify-content:center;gap:14px;font-weight:700;font-size:22px;line-height:1.2;padding:18px 30px;border-radius:var(--r-btn);white-space:nowrap;min-height:72px;border:0;font-family:inherit}
 .kobtn{background:var(--chalk);color:#000;mix-blend-mode:screen;filter:url(#chalkEdge)}
@@ -191,16 +207,24 @@ td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
 .blend .nt{font-family:var(--f-board);font-style:italic;font-size:26px;line-height:1.3;margin-top:16px}
 
 /* iconen */
-.icons{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.icons figure{background:#fffdf8;border:1px solid var(--line);border-radius:8px;padding:12px 12px 14px;text-align:center;font-size:15px;line-height:1.3}
-.icons img{width:100%;aspect-ratio:1;object-fit:contain}
-.icons .top{display:none}
-.icons.boven .top{display:block}.icons.boven .tq{display:none}
-.toggle{display:flex;gap:8px;margin:0 0 20px;flex-wrap:wrap}
-.toggle button{font:inherit;font-size:17px;font-weight:700;padding:10px 18px;border-radius:var(--r-btn);border:2px solid var(--ink);background:none;color:var(--ink);cursor:pointer;white-space:nowrap}
-.toggle button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
-.onboard{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
-.onboard img{width:96px;height:96px}
+.abc{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:24px}
+.abc figure{background:#fffdf8;border:2px solid var(--line);border-radius:8px;padding:20px 22px 22px;font-size:16px;color:var(--soft)}
+.abc figure.pick{border-color:var(--ink)}
+.abc img{width:128px;height:128px;margin:0 auto 12px}
+.abc b{display:block;font-family:var(--f-board);font-weight:600;font-size:22px;color:var(--ink)}
+.abc em{font-style:normal;font-weight:700;color:var(--kanel)}
+.kast{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:24px}
+.kast figure{background:#fffdf8;border:1px solid var(--line);border-radius:8px;padding:16px}
+.kast h4{font-family:var(--f-board);font-weight:600;font-size:22px;line-height:1.2}
+.kast h4 small{display:block;font-family:var(--f-ui);font-weight:500;font-size:14px;color:var(--soft)}
+.kast .four{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:12px;font-size:13px;color:var(--soft);text-align:center;line-height:1.2}
+.kast .four span{display:block}
+.kast .four img{width:100%;aspect-ratio:1;object-fit:contain;margin-bottom:2px}
+.onboard{display:flex;gap:16px 12px;flex-wrap:wrap;justify-content:center;align-items:center}
+.onboard .s32{width:32px;height:32px}.onboard .s48{width:48px;height:48px}
+.onboard .s96{width:96px;height:96px}
+.onlab{font-size:15px;opacity:.9;text-align:center;margin:10px 0 28px}
+.onlab:last-child{margin-bottom:0}
 
 /* proces */
 .steps{display:grid;gap:56px;margin-top:32px}
@@ -208,6 +232,8 @@ td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
 .step .lab{font-family:var(--f-board);font-weight:600;font-size:24px;line-height:1.2}
 .step .lab small{display:block;font-family:var(--f-ui);font-weight:500;font-size:16px;color:var(--soft);margin-top:8px}
 .step img{max-height:880px;width:100%;object-fit:cover;object-position:top;border-radius:8px;border:1px solid var(--line);box-shadow:0 10px 30px rgba(42,36,32,.08)}
+.step .hist{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.step .hist img{max-height:none;box-shadow:none;background:#fffdf8;aspect-ratio:1;object-fit:contain}
 .step .nopic{background:#fffdf8;border:1px dashed #c9bfae;border-radius:8px;padding:28px;font-family:var(--f-board);font-style:italic;font-size:24px;color:var(--soft)}
 
 footer{margin-top:120px;padding-bottom:0}
@@ -218,10 +244,10 @@ footer .ledge{margin:0 -12px}
 
 /* ===== telefoon ===== */
 @media (max-width:820px){
-  .grid2,.grid3,.feel,.lv,.spices,.rules,.principles,.idea,.legend{grid-template-columns:1fr}
-  .dont{grid-template-columns:1fr 1fr}
+  .grid2,.grid3,.feel,.lv,.rules,.principles,.idea,.legend,.fb,.methods{grid-template-columns:1fr}
+  .dont,.spices,.kast{grid-template-columns:1fr 1fr}
+  .abc{gap:12px}.abc figure{padding:12px}.abc img{width:100%;height:auto}.abc b{font-size:18px}.abc span{display:none}
   .base{grid-template-columns:1fr 1fr}
-  .icons{grid-template-columns:1fr 1fr}
   .idea .p{border-right:1px solid var(--line);border-bottom:0;border-radius:var(--r-board) var(--r-board) 0 0}
   .step{grid-template-columns:1fr;gap:16px}
   .type .row{grid-template-columns:1fr;gap:8px}
@@ -249,7 +275,9 @@ footer .ledge{margin:0 -12px}
   footer dl{grid-template-columns:1fr;gap:2px}
   footer dd{margin-bottom:12px}
   .mini img{width:180px}.mini .tag{font-size:10.5px}
-  .icons{gap:12px}
+  .kast{gap:12px}.kast figure{padding:10px}.kast h4{font-size:19px}.kast .four{gap:4px 6px;font-size:12px}
+  .spices{grid-template-columns:1fr}
+  .step .hist{grid-template-columns:1fr 1fr}
   table{font-size:14px}th,td{padding:8px 8px 8px 0}.hx{display:block;margin-left:22px}th:nth-child(4),td:nth-child(4){display:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -298,7 +326,7 @@ footer .ledge{margin:0 -12px}
     <div class="motto chalkL">grammar is the spice of speech.</div>
     <p class="chalkS">Krydder is een oefenapp voor Noors op niveau A1. Dit merkboek laat zien hoe hij eruitziet, waarom, en hoe hij zo is geworden.</p>
   </div>
-  <div class="ledge" data-sticks="kanel,kardemomme,safran,pepper|chalk,dill,nellik"></div>
+  <div class="ledge" data-sticks="kanel,kardemomme,safran,paprika|chalk,einer,dill,nellik"></div>
 
   <nav class="toc" aria-label="Inhoud">
     <a href="#verhaal"><span>1</span>Het verhaal</a>
@@ -406,8 +434,9 @@ footer .ledge{margin:0 -12px}
 <!-- ===== 4 kleur ===== -->
 <section class="s" id="kleur">
   <div class="kick">4. Kleur</div>
-  <h2>Zes kruiden, zes krijtjes</h2>
-  <p class="lead">Elke woordsoort heeft een eigen kruid. Op papier zie je het kruid zelf; op het bord een lichte krijttint van hetzelfde kruid. Zo weet je bij elke vraag meteen waar je bent, zonder dat er een woord bij hoeft.</p>
+  <h2>Acht kruiden, acht krijtjes</h2>
+  <p class="lead">Elke soort grammatica heeft een eigen kruid. Op papier zie je het kruid zelf; op het bord een lichte krijttint van hetzelfde kruid. Zo weet je bij elke vraag meteen waar je bent, zonder dat er een woord bij hoeft.</p>
+  <p class="prose" style="margin-top:16px">Van de bijna 300 lijsten in de app gaan er ongeveer 140 over grammatica of uitspraak. Die vallen in acht groepen, dus acht kruiden. Gewone woordenlijsten krijgen geen kruid: die blijven krijtwit.</p>
 
   <h3>Basis</h3>
   <div class="base">
@@ -421,9 +450,30 @@ footer .ledge{margin:0 -12px}
 
   <h3>Kruiden en krijt</h3>
   <div class="spices" id="spices"></div>
+  <p class="note">Gemeten in CIEDE2000: de kruiden verschillen onderling minstens 14,7 (kaneel tegen paprika), de krijtjes inclusief krijtwit en water minstens 12,7 (de eis was 12). Daarom kregen vier krijtjes een nieuwe tint: krijt peper leek eerst op krijtwit, en krijt kardemom op krijt dille.</p>
+
+  <h3>Eén kleur, één betekenis</h3>
+  <p class="prose">In de app betekent een kruidkleur alleen een soort grammatica. Al het andere is krijtwit, en het verschil zit in vorm, niet in kleur.</p>
+  <ul class="rulelist">
+    <li><b>Hoofdstuk gehaald:</b> een volle krijtwitte lijn en een krijtwit vinkje.</li>
+    <li><b>Huidig hoofdstuk:</b> krijtwit en vet, met een getekend krijtpijltje ervoor.</li>
+    <li><b>Vinkjes:</b> altijd krijtwit, in elke oefening.</li>
+    <li><b>Focusrand:</b> krijtwit op het bord, inkt op papier.</li>
+    <li><b>Een zin:</b> elk zinsdeel krijgt het kruid van zijn woordsoort; kruidnagel staat alleen in het label woordvolgorde.</li>
+    <li><b>Kaneel als accent</b> mag in dit merkboek en in de marketing. Het zaadje in het logo blijft saffraan: dat is logo, geen label.</li>
+  </ul>
+
+  <h3>Goed en fout</h3>
+  <p class="prose">Na een antwoord moet je in een halve seconde zien hoe het ging. Goed is groen, fout is rood: allebei gedempt, zodat ze bij de kruiden passen. De typfout blijft water: de natte spons, waarmee jij zelf beslist.</p>
+  <div class="fb">
+    <div style="background:var(--good);color:var(--paper)"><b>Correct.</b>Groen, voorlopig #3f7a3a</div>
+    <div style="background:var(--bad);color:var(--paper)"><b>Wrong.</b>Rood, voorlopig #a3332b</div>
+    <div style="background:var(--water);color:#fff"><b>Count as wrong</b>Water, #5f8296</div>
+  </div>
+  <p class="note">Groen en rood zijn voorlopig: de exacte tinten worden in de app gekozen. Ze zijn donker, dus ze staan op papier of als vlak met papieren letters, niet op het bord. Rood en groen staan nooit alleen: er hoort altijd een woord of teken bij, voor wie ze niet uit elkaar kan houden.</p>
 
   <h3>Contrast</h3>
-  <p class="prose">Alle tekst haalt minstens WCAG AA (4,5:1). Kruiden die op papier te licht zijn voor tekst, gebruiken we daar alleen als vlak of lijn, nooit als letter.</p>
+  <p class="prose">Alle tekst haalt minstens WCAG AA (4,5:1). Kruiden die op papier te licht zijn voor tekst, gebruiken we daar alleen als vlak of lijn, nooit als letter. De krijtjes halen het op het bord met een kleine marge: niet lichter of donkerder maken zonder opnieuw te meten.</p>
   <div class="tbl"><table>
     <thead><tr><th>Voorgrond</th><th>Achtergrond</th><th>Contrast</th><th>Gebruik</th></tr></thead>
     <tbody id="contrast"></tbody>
@@ -462,8 +512,8 @@ footer .ledge{margin:0 -12px}
   <p class="lead" style="margin-top:32px">In het Nederlands klinkt <i>kruid</i> bijna als <i>krijt</i>. Dat is het hele idee: de gekleurde krijtjes op het bord zijn de kruiden. Een werkwoord schrijf je in kaneel, een zelfstandig naamwoord in kardemom.</p>
 
   <div class="rules">
-    <figure><img src="brand/icons/052-real-drie-kwart.webp" alt="Een hele saffraankrokus" width="200" height="200"><b>Heel kruid is uitleg</b><p>Waar de app grammatica uitlegt, staat het kruid heel: een stokje, een bloem, een tak. Rustig om naar te kijken.</p></figure>
-    <figure><img src="brand/icons/053-real-drie-kwart.webp" alt="Gemalen saffraan op een vel papier" width="200" height="200"><b>Gemalen kruid is oefenen</b><p>Waar je oefent, valt het kruid gemalen van bovenaf, als een snufje over je antwoord.</p></figure>
+    <figure><img src="brand/icons/toon/kanel-heel.webp" alt="Een heel kaneelstokje" width="200" height="200"><b>Heel kruid is uitleg</b><p>Waar de app grammatica uitlegt, staat het kruid heel: een stokje, een peul, een bes. Rustig om naar te kijken.</p></figure>
+    <figure><img src="brand/icons/toon/kanel-gemalen.webp" alt="Een strooispoor van gemalen kaneel" width="200" height="200"><b>Gemalen kruid is oefenen</b><p>Waar je oefent, ligt het kruid gemalen: een strooispoor, alsof het uit je hand valt. Geen hoopje.</p></figure>
   </div>
   <div class="grid2" style="margin-top:32px">
     <div class="prose"><b>Een zin is een melange.</b> Elk zinsdeel heeft zijn eigen kruid. Onder elk zinsdeel ligt een lijntje van zijn kruid, dat volloopt met korrels als dat deel goed is.</div>
@@ -481,19 +531,28 @@ footer .ledge{margin:0 -12px}
   <h3>Startscherm: voortgang in krijt</h3>
   <div class="demo">
     <div class="board">
-      <div class="bh chalkL">22 words wait for you in <span class="nowrap" style="color:var(--chalk-safran)">chapter 4</span></div>
+      <div class="bh chalkL">22 words wait for you in <b class="nowrap">chapter 4</b></div>
       <div class="bs chalkS">64% so far. You pass at 80%.</div>
       <div class="chaps" id="chaps"></div>
       <div class="cta"><button class="btn" type="button">Continue chapter 4</button><span class="link">Choose something else</span></div>
     </div>
-    <div class="ledge" data-sticks="kanel,kardemomme,pepper|chalk,dill,nellik" data-up="safran"></div>
+    <div class="ledge"></div>
   </div>
   <div class="legend">
-    <div><b>Krijtlijn</b>Elk hoofdstuk is een krijtstreep die zich vult.</div>
-    <div><b>Streepje bij 80%</b>Daar ben je geslaagd.</div>
-    <div><b>Vinkje</b>Een gehaald hoofdstuk krijgt een krijtvinkje.</div>
+    <div><b>Krijtlijn</b>Elk hoofdstuk is een krijtstreep die zich vult, in krijtwit.</div>
+    <div><b>Pijltje en streepje</b>Het pijltje wijst je huidige hoofdstuk aan; bij 80% ben je geslaagd.</div>
+    <div><b>Vinkje</b>Een gehaald hoofdstuk krijgt een krijtwit vinkje.</div>
   </div>
-  <p class="note">Op de computer staan de bronnen (boek, docent, examen, luisteren) als potjes op een kruidenrek. Op de telefoon worden het grote woorden met elk een krijtstreep eronder.</p>
+  <p class="note">Op de computer staan de bronnen (boek, docent, examen, luisteren) als potjes op een kruidenrek. Op de telefoon is het startscherm een lijst: grote woorden onder elkaar, met elk een lijn eronder. De richel is hier leeg: krijtjes liggen alleen op het oefenbord.</p>
+
+  <h3>Methode kiezen: drie kaarten, de rest erachter</h3>
+  <div class="methods">
+    <div><b>Learn <em>Recommended</em></b><span>See the word, copy it, pick it from 4, then type it yourself</span></div>
+    <div><b>Test</b><span>Every word once, grade at the end</span></div>
+    <div><b>Multiple choice</b><span>Pick the right answer from 4 options</span></div>
+  </div>
+  <span class="more">More methods</span>
+  <p class="note">Drie kaarten zijn genoeg om te beginnen. Spelling, dictee, flashcards en het werkblad staan achter More methods, zodat de keuze rustig blijft.</p>
 
   <h3>Typfout: jij beslist, op het bord</h3>
   <div class="demo">
@@ -512,6 +571,7 @@ footer .ledge{margin:0 -12px}
     <p><b>Count as right</b> is een blok krijt met een krijtvinkje; de tekst is eruit gespaard, daar zie je het bord.</p>
     <p><b>Count as wrong</b> is een natte spons: waterblauw, zonder rand. Je veegt het antwoord weg.</p>
   </div>
+  <p class="note">De typfout is het enige moment met water. Bij een gewoon antwoord kleurt de feedback groen of rood (zie Kleur).</p>
 
   <h3>Een zin oefenen: elk zinsdeel zijn eigen kruid</h3>
   <div class="demo sent">
@@ -520,11 +580,11 @@ footer .ledge{margin:0 -12px}
       <div class="q chalkL">Jeg har norskkurs i dag.</div>
       <div class="bs chalkS">Rewrite it. Start with I dag.</div>
     </div>
-    <div class="ledge" data-sticks="kanel,kardemomme,safran,pepper|chalk,dill" data-up="nellik"></div>
+    <div class="ledge" data-sticks="kanel,kardemomme,safran,pepper|chalk,einer,dill" data-up="nellik"></div>
     <div class="field">I dag har j</div>
     <div class="parts" id="parts"></div>
   </div>
-  <p class="note">De lijn is het snufje: onder elk zinsdeel ligt een dun lijntje gemalen kruid. Leeg is het een rij grijze puntjes, terwijl je typt verschijnen een paar korrels, en is het deel goed, dan is de lijn vol korrels. Tijd in kruidnagel, werkwoord in kaneel, onderwerp in peper, lijdend voorwerp in kardemom. Er is geen aparte krijtlijn en geen hoopje.</p>
+  <p class="note">De lijn is het snufje: onder elk zinsdeel ligt een dun lijntje gemalen kruid. Leeg is het een rij grijze puntjes, terwijl je typt verschijnen een paar korrels, en is het deel goed, dan is de lijn vol korrels. Elk zinsdeel krijgt het kruid van zijn woordsoort: I dag in paprika (tijd), har in kaneel, jeg in peper, norskkurs in kardemom. Kruidnagel staat alleen in het label bovenaan. Er is geen aparte krijtlijn en geen hoopje.</p>
   <p class="note">Eerlijk: in de live app komt deze kleur per zinsdeel in een latere stap, want de oefeningen hebben nog geen labels per zinsdeel.</p>
 
   <h3>Hoofdstuk gehaald: jouw melange</h3>
@@ -543,50 +603,68 @@ footer .ledge{margin:0 -12px}
 <section class="s" id="iconen">
   <div class="kick">8. Iconen</div>
   <h2>De kruidenkast</h2>
-  <p class="lead">De kruiden zijn in 3D gemaakt in Blender. Eerst honderd gestileerde kruiden in klei, botanisch en gefacetteerd; daaruit koos Niels er zestien. Die zijn opnieuw gemaakt, half realistisch: met echte lichtberekening, textuur uit formules en per korrel of blad een iets andere kleur.</p>
+  <p class="lead">Elk kruid bestaat heel en gemalen, en in twee uitvoeringen: getekend als SVG voor klein, gerenderd in Blender voor groot. De stijl heet Hay Day licht: ronde stevige vormen, een dunne lijn in een donkere tint van het kruid zelf, twee tinten en een streepje licht.</p>
 
-  <h3>Ronde 1: honderd kruiden</h3>
-  <img src="brand/icons/ronde1-100.webp" alt="Overzicht van honderd gestileerde 3D kruiden" width="1200" height="1200" style="width:min(640px,100%);border-radius:8px;border:1px solid var(--line)">
+  <h3>De stijltest: drie keer kaneel</h3>
+  <p class="prose">Hetzelfde kaneelstokje, van rustig naar speels. B won: leesbaar op 24 px, vriendelijk op 96 px.</p>
+  <div class="abc">
+    <figure><img src="brand/icons/svg/kanel-stijl-a.svg" alt="Kaneel in stijl A" width="128" height="128"><b>A. Vlak met schaduw</b><span>Rustig, maar wat kaal. Geen lijn, geen glans.</span></figure>
+    <figure class="pick"><img src="brand/icons/svg/kanel-stijl-b.svg" alt="Kaneel in stijl B" width="128" height="128"><b>B. Hay Day licht</b><span><em>Gekozen.</em> Zachte lijn in een donkere tint, twee tinten en een streepje licht.</span></figure>
+    <figure><img src="brand/icons/svg/kanel-stijl-c.svg" alt="Kaneel in stijl C" width="128" height="128"><b>C. Hay Day vol</b><span>Dikkere lijn, drie tinten en een glimlicht. Naast het rustige bord te druk.</span></figure>
+  </div>
+  <div class="grid3" style="margin-top:24px">
+    <div class="sheet"><b>Wat we lenen</b><p style="font-size:16px;color:var(--soft);margin-top:6px">Ronde, iets te dikke vormen; een lijn in een donkere tint van het kruid, nooit zwart; licht linksboven, schaduw rechtsonder.</p></div>
+    <div class="sheet"><b>Wat we niet lenen</b><p style="font-size:16px;color:var(--soft);margin-top:6px">Geen felle verzadiging, geen dikke zwarte randen, geen verloop over het hele vlak. De kleuren blijven die van het merkboek.</p></div>
+    <div class="sheet"><b>Heel en gemalen</b><p style="font-size:16px;color:var(--soft);margin-top:6px">Heel is uitleg. Gemalen is geen hoopje maar een strooispoor langs een zachte boog, alsof het kruid uit je hand valt.</p></div>
+  </div>
 
-  <h3>Ronde 2: de shortlist van zestien</h3>
-  <p class="prose">Elk kruid is gerenderd in twee aanzichten: schuin van boven en recht van boven. De laatste vijf zijn nog niet gekozen.</p>
-  <div class="toggle" role="group" aria-label="Aanzicht"><button type="button" aria-pressed="true" data-view="">Schuin van boven</button><button type="button" aria-pressed="false" data-view="boven">Recht van boven</button></div>
-  <div class="icons" id="icons"></div>
+  <h3>De acht kruiden</h3>
+  <p class="prose">Boven de SVG, onder de Blender render; links heel, rechts gemalen.</p>
+  <div class="kast" id="kast"></div>
 
-  <h3>Op het bord</h3>
-  <div class="board round"><div class="onboard" id="onboard"></div></div>
-  <p class="note">Op 96 px, op het bord. Zo verschijnen ze naast een uitleg van de grammatica.</p>
+  <h3>Klein is SVG, groot is Blender</h3>
+  <div class="board round">
+    <div class="onboard" id="ob-svg"></div>
+    <p class="onlab">SVG op 32 en 48 px: scherp op elk formaat en licht van gewicht.</p>
+    <div class="onboard" id="ob-toon"></div>
+    <p class="onlab">Blender toon op 96 px, gerenderd op 512 px: zachte schaduw en een glimlichtje.</p>
+  </div>
+  <p class="note">De regel: tot en met 48 px de SVG, vanaf 96 px de Blender render. Blender levert alleen PNG; daarom blijft de SVG set de echte vector.</p>
 </section>
 
 <!-- ===== 9 proces ===== -->
 <section class="s" id="proces">
   <div class="kick">9. Hoe het ontstond</div>
-  <h2>Zeven rondes</h2>
-  <p class="lead">Niels schrijft zelf geen code. Hij regisseerde het ontwerp in zeven rondes van schetsen: kiezen, afwijzen, aanscherpen. Een paar ijkpunten.</p>
+  <h2>Van schets tot app</h2>
+  <p class="lead">Niels schrijft zelf geen code. Hij regisseerde het ontwerp in rondes: kiezen, afwijzen, aanscherpen. Eerst zeven rondes schetsen, daarna een strenge review, de echte app en vier rondes iconen. Een paar ijkpunten.</p>
   <div class="steps">
     <div class="step"><div class="lab">Het begin<small>Een werkende overhoorapp, maar zonder eigen gezicht.</small></div><img src="brand/proces/begin.webp" alt="De eerste versie van de app" width="780" height="430"></div>
     <div class="step"><div class="lab">Ronde 1<small>Het oordeel van Niels: standaard AI rommel. Terug naar het gevoel.</small></div><div class="nopic">standaard AI rommel.</div></div>
-    <div class="step"><div class="lab">Ronde 2<small>Gelinieerd schrift en een rode kantlijn. Wel school, nog geen bord.</small></div><img src="brand/proces/ronde2-ui.webp" alt="Ronde 2: een schriftpagina" width="1160" height="721"></div>
-    <div class="step"><div class="lab">Logo, ronde 2<small>Vier richtingen. Het schoonschrift won; de krul ging er later af, het zaadje bleef.</small></div><img src="brand/proces/logo-ronde2.webp" alt="Vier logorichtingen" width="1200" height="1228"></div>
-    <div class="step"><div class="lab">Ronde 3<small>Het bord verschijnt, met een richel en de eerste krijtjes.</small></div><img src="brand/proces/ronde3-ui.webp" alt="Ronde 3: het eerste bord" width="1160" height="721"></div>
-    <div class="step"><div class="lab">Ronde 7<small>Krijtletters, krijtlijnen met vinkjes, het motto op het bord en het kruidenrek.</small></div><img src="brand/proces/ronde7-ui.webp" alt="Ronde 7: het startscherm" width="1160" height="1596"></div>
+    <div class="step"><div class="lab">Ronde 2<small>Gelinieerd schrift en een rode kantlijn. Wel school, nog geen bord.</small></div><img src="brand/proces/ronde2-ui.webp" alt="Ronde 2: een schriftpagina" width="1160" height="721" loading="lazy"></div>
+    <div class="step"><div class="lab">Logo, ronde 2<small>Vier richtingen. Het schoonschrift won; de krul ging er later af, het zaadje bleef.</small></div><img src="brand/proces/logo-ronde2.webp" alt="Vier logorichtingen" width="1200" height="1228" loading="lazy"></div>
+    <div class="step"><div class="lab">Ronde 3<small>Het bord verschijnt, met een richel en de eerste krijtjes.</small></div><img src="brand/proces/ronde3-ui.webp" alt="Ronde 3: het eerste bord" width="1160" height="721" loading="lazy"></div>
+    <div class="step"><div class="lab">Ronde 7<small>Krijtletters, krijtlijnen met vinkjes, het motto op het bord en het kruidenrek.</small></div><img src="brand/proces/ronde7-ui.webp" alt="Ronde 7: het startscherm" width="1160" height="1596" loading="lazy"></div>
+    <div class="step"><div class="lab">Kruiden, ronde 1 en 2<small>Honderd gestileerde kruiden in klei; daaruit zestien, opnieuw gemaakt en half realistisch. Mooi, maar te echt: Niels wilde iets in de geest van Hay Day.</small></div><div><img src="brand/icons/ronde1-100.webp" alt="Honderd gestileerde 3D kruiden" width="1200" height="1200" loading="lazy" style="max-height:none;max-width:520px;margin-bottom:12px"><div class="hist"><img src="brand/icons/052-real-drie-kwart.webp" alt="Saffraankrokus, half realistisch" width="480" height="480" loading="lazy"><img src="brand/icons/054-real-drie-kwart.webp" alt="Dilletak, half realistisch" width="480" height="480" loading="lazy"><img src="brand/icons/045-real-drie-kwart.webp" alt="Vanillestokjes, half realistisch" width="480" height="480" loading="lazy"><img src="brand/icons/083-real-drie-kwart.webp" alt="Vijzel met peperkorrels, half realistisch" width="480" height="480" loading="lazy"></div></div></div>
+    <div class="step"><div class="lab">De review<small>Het werk ging langs de regels van de ontwerper uit hoofdstuk 2. Zijn punten: drie soorten hoofdknoppen, feedback die te zacht was, tekst die op twee regels brak en 24 verschillende lettergroottes. Hieruit kwamen groen en rood, en één schaal voor maten.</small></div><img src="brand/proces/review-home.webp" alt="Het startscherm zoals het werd beoordeeld" width="1160" height="653" loading="lazy"></div>
+    <div class="step"><div class="lab">De echte app<small>Het ontwerp ging de app in, met alle echte lijsten. Op de computer potjes op een rek, op de telefoon een lijst; bij de methodes drie kaarten en de rest achter More methods.</small></div><img src="brand/proces/live-home.webp" alt="Het startscherm van de echte app" width="1160" height="1426" loading="lazy"></div>
+    <div class="step"><div class="lab">Kruiden, ronde 3 en 4<small>Twee nieuwe kruiden erbij, paprika en jeneverbes. Eerst drie SVG stijlen naast elkaar, daarna de SVG naast een Blender toon render. Hay Day licht won; de SVG voor klein, Blender voor groot.</small></div><div class="hist" id="hist-toon"></div></div>
   </div>
 </section>
 
 <!-- ===== 10 colofon ===== -->
 <footer id="colofon">
   <div class="board">
-    <div class="kick" style="color:var(--chalk-safran)">10. Colofon</div>
+    <div class="kick" style="color:var(--chalk)">10. Colofon</div>
     <h2 class="chalkL" style="margin-bottom:8px">Gemaakt door</h2>
     <dl class="chalkS">
       <dt>Ontwerp en regie</dt><dd>Niels Reuvekamp</dd>
       <dt>Gebouwd met</dt><dd>Claude Code</dd>
-      <dt>Iconen</dt><dd>Gerenderd in Blender</dd>
+      <dt>Iconen</dt><dd>Getekend in SVG en gerenderd in Blender</dd>
       <dt>Letters</dt><dd>Norican, Fraunces en Schibsted Grotesk, alle drie onder de SIL Open Font License</dd>
       <dt>De app</dt><dd><a href="https://nreuvekamp-creator.github.io/krydder/">Krydder openen</a></dd>
     </dl>
   </div>
-  <div class="ledge" data-sticks="kanel,kardemomme,safran|chalk,pepper,dill,nellik"></div>
+  <div class="ledge" data-sticks="kanel,kardemomme,safran,einer|chalk,pepper,paprika,dill,nellik"></div>
   <div style="height:48px"></div>
 </footer>
 
@@ -594,12 +672,14 @@ footer .ledge{margin:0 -12px}
 
 <script>
 var SPICES = [
-  ["kanel","Kaneel","#9c4f2c","#fad5c2","Werkwoorden"],
-  ["kardemomme","Kardemom","#8f9c7a","#e1ead0","Zelfstandige naamwoorden"],
-  ["safran","Saffraan","#d29a2f","#f9dd9a","Bijvoeglijke naamwoorden"],
-  ["pepper","Peper","#3b3633","#e0dcd8","Voornaamwoorden"],
-  ["nellik","Kruidnagel","#6a3546","#f7d5e0","Woordvolgorde"],
-  ["dill","Dille","#5c7a35","#d6eab4","Uitspraak en luisteren"]
+  ["kanel","Kaneel","#9c4f2c","#ffd3ac","Werkwoorden","De warme motor van de zin: zonder werkwoord gebeurt er niets."],
+  ["kardemomme","Kardemom","#8f9c7a","#dcedc9","Zelfstandige naamwoorden","De dingen zelf; kardemom zit in elk Noors gebak."],
+  ["safran","Saffraan","#d29a2f","#f5e59e","Bijvoeglijke naamwoorden","Geeft kleur aan een woord, zoals saffraan aan een gerecht."],
+  ["pepper","Peper","#3b3633","#fff0fd","Voornaamwoorden","Klein en overal: ik, jij, hij. Op het bord witte peper."],
+  ["nellik","Kruidnagel","#6a3546","#f8cdfd","Woordvolgorde","Een kruidnagel prik je op een vaste plek, zoals het werkwoord op plek twee."],
+  ["dill","Dille","#5c7a35","#a0ead4","Uitspraak en luisteren","Fris en Noors, het kruid dat je overal ruikt; zoals de klank van de taal."],
+  ["paprika","Paprika","#b0303c","#ffd0cc","Getallen, klok, dagen en tijd","In Noorwegen heten feestdagen røde dager: de rode dagen in de kalender."],
+  ["einer","Jeneverbes","#4e5a8a","#d2d9ff","Kleine woordjes: vraagwoorden, voorzetsels, bijwoorden","Kleine bessen die je bijna niet ziet, maar ze zitten overal in; net als i, på, hva en ikke."]
 ];
 function lum(h){ return [1,3,5].map(function(i){ var c = parseInt(h.substr(i,2),16)/255; return c <= .03928 ? c/12.92 : Math.pow((c+.055)/1.055, 2.4); }).reduce(function(s,c,i){ return s + c*[.2126,.7152,.0722][i]; }, 0); }
 function ratio(a,b){ var x = lum(a), y = lum(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05); }
@@ -608,7 +688,7 @@ var PAPER = "#f7f2e8", BOARD = "#55644e";
 
 document.getElementById('spices').innerHTML = SPICES.map(function(s){
   var onPaper = ratio(s[2], PAPER), light = lum(s[2]) < .18;
-  return '<div class="sp"><div class="duo"><div style="background:' + s[2] + ';color:' + (light ? PAPER : '#2a2420') + '"><b>kruid</b>' + s[2] + '</div><div style="color:' + s[3] + '"><b class="chalkS">krijt</b><span class="chalkS">' + s[3] + '</span></div></div><h4>' + s[1] + '</h4><p>' + s[4] + '</p></div>';
+  return '<div class="sp"><div class="duo"><div style="background:' + s[2] + ';color:' + (light ? PAPER : '#2a2420') + '"><b>kruid</b>' + s[2] + '</div><div style="color:' + s[3] + '"><b class="chalkS">krijt</b><span class="chalkS">' + s[3] + '</span></div></div><h4>' + s[1] + '</h4><p>' + s[4] + '</p><p class="why">' + s[5] + '</p></div>';
 }).join('');
 
 var rows = [
@@ -617,7 +697,10 @@ var rows = [
   ["Kaneel","#9c4f2c","Papier",PAPER,"Tagline en accenten"],
   ["Krijt","#f7f2e8","Bord",BOARD,"Tekst op het bord"]
 ].concat(SPICES.map(function(s){ return ["Krijt " + s[1].toLowerCase(), s[3], "Bord", BOARD, s[4]]; }))
- .concat([["Krijt water","#bbe0f8","Bord",BOARD,"Count as wrong (op nat vlak nog hoger)"]])
+ .concat([["Krijt water","#bbe0f8","Bord",BOARD,"Count as wrong (op nat vlak nog hoger)"],
+   ["Groen","#3f7a3a","Papier",PAPER,"Goed, voorlopig"],["Papier op groen",PAPER,"Groen","#3f7a3a","Tekst op een groen vlak"],
+   ["Rood","#a3332b","Papier",PAPER,"Fout, voorlopig"],["Papier op rood",PAPER,"Rood","#a3332b","Tekst op een rood vlak"]])
+ .concat(SPICES.filter(function(s){ return /paprika|einer/.test(s[0]); }).map(function(s){ return [s[1], s[2], "Papier", PAPER, "Mag ook als tekst"]; }))
  .concat(SPICES.filter(function(s){ return ratio(s[2], PAPER) < 4.5; }).map(function(s){ return [s[1], s[2], "Papier", PAPER, "Alleen vlak of lijn, geen tekst"]; }));
 document.getElementById('contrast').innerHTML = rows.map(function(r){
   var c = ratio(r[1], r[3]);
@@ -625,7 +708,7 @@ document.getElementById('contrast').innerHTML = rows.map(function(r){
 }).join('');
 
 /* krijtjes op de richel: groepje links, groepje rechts, het gebruikte krijtje los in het midden */
-var LEN = {kanel:58,kardemomme:40,safran:50,pepper:34,nellik:46,dill:44,chalk:44};
+var LEN = {kanel:58,kardemomme:40,safran:50,pepper:34,nellik:46,dill:44,paprika:42,einer:36,chalk:44};
 document.querySelectorAll('.ledge[data-sticks]').forEach(function(el){
   var f = innerWidth < 560 ? .62 : 1, g = el.dataset.sticks.split('|'), h = '', x = innerWidth < 560 ? 12 : 26, r = x, gap = [3,6,2,5,4,3,6], gi = 0;
   var st = function(k, pos){ return '<i class="stick" style="' + pos + ';width:' + Math.round(LEN[k]*f) + 'px;background-color:' + (k === 'chalk' ? 'var(--chalk)' : 'var(--chalk-' + k + ')') + '"></i>'; };
@@ -642,16 +725,17 @@ function line(p, colour, mark){
     (mark ? '<path d="M800 3 L800 21" stroke="var(--chalk)" stroke-width="3" stroke-linecap="round"/>' : '') +
     (p > 0 ? '<path d="' + d + '" pathLength="100" fill="none" stroke="' + colour + '" stroke-width="9" stroke-linecap="round" stroke-dasharray="100 100" stroke-dashoffset="' + (100 - p) + '"/>' : '') + '</svg>';
 }
-var TICK = '<svg class="ok chalk" viewBox="0 0 40 40" aria-label="passed"><path d="M6 21 C 11 25, 14 29, 16 33 C 21 22, 28 13, 35 6" fill="none" stroke="var(--chalk-dill)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var ARROW = '<svg class="arr chalk" viewBox="0 0 24 16" aria-hidden="true"><path d="M2 8.5 C 8 7.5, 14 8.5, 20 8 M14 3 C 16.5 5, 18.5 6.6, 21 8 C 18.5 9.6, 16.5 11, 14 13" fill="none" stroke="var(--chalk)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var TICK = '<svg class="ok chalk" viewBox="0 0 40 40" aria-label="passed"><path d="M6 21 C 11 25, 14 29, 16 33 C 21 22, 28 13, 35 6" fill="none" stroke="var(--chalk)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 var CH = [["1","Endelig i Bergen!",100],["2","Sulten og tørst!",100],["3","Kom inn!",100],["4","Hverdag og fritid",64],["5","Det finnes ikke dårlig vær, bare dårlige klær",0],["6","Ut på tur, aldri sur",0],["7","Fest og høytider",0]];
 document.getElementById('chaps').innerHTML = CH.map(function(c){
   var done = c[2] >= 100, now = !done && c[2] > 0;
-  return '<div class="chap' + (now ? ' now' : '') + '"><span class="n chalkS">' + c[0] + '</span><span class="t chalkS">' + c[1] + '</span>' + line(c[2], done ? 'var(--chalk-dill)' : 'var(--chalk-safran)', now) + (done ? TICK : '<span></span>') + '</div>';
+  return '<div class="chap' + (now ? ' now' : '') + '"><span class="n chalkS">' + (now ? ARROW : '') + c[0] + '</span><span class="t chalkS">' + c[1] + '</span>' + line(c[2], 'var(--chalk)', now) + (done ? TICK : '<span></span>') + '</div>';
 }).join('');
 
 function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function gauss(r){ return Math.sqrt(-2*Math.log(r() || 1e-9)) * Math.cos(2*Math.PI*r()); }
-var PARTS = [["I dag","nellik","time"],["har","kanel","verb"],["jeg","pepper","subject"],["norskkurs","kardemomme","object"]];
+var PARTS = [["I dag","paprika","time"],["har","kanel","verb"],["jeg","pepper","subject"],["norskkurs","kardemomme","object"]];
 /* optie a: de lijn is het snufje. Leeg: grijze puntjes; bezig: een paar korrels; goed: een volle lijn korrels */
 (function(){
   var d = '';
@@ -670,23 +754,21 @@ document.getElementById('parts').innerHTML = PARTS.map(function(p, i){
 }).join('');
 
 /* melange van het hoofdstuk */
-var BLEND = [["kardemomme","nouns",46],["kanel","verbs",24],["safran","adjectives",12],["pepper","pronouns",8],["nellik","word order",6],["dill","listening",4]].reverse();
-var H = innerWidth < 560 ? 230 : 300, MIN = 26, hs = BLEND.map(function(b){ return Math.max(MIN, Math.round(b[2]/100*H)); });
+var BLEND = [["kardemomme","nouns",38],["kanel","verbs",22],["safran","adjectives",10],["paprika","numbers and time",9],["pepper","pronouns",7],["einer","small words",6],["nellik","word order",4],["dill","listening",4]].reverse();
+var H = innerWidth < 560 ? 180 : 240, MIN = innerWidth < 560 ? 20 : 22, hs = BLEND.map(function(b){ return Math.max(MIN, Math.round(b[2]/100*H)); });
 document.getElementById('layers').innerHTML = BLEND.map(function(b,i){ return '<i style="height:' + hs[i] + 'px;background:var(--' + b[0] + ')"></i>'; }).join('');
 document.getElementById('names').innerHTML = BLEND.map(function(b,i){ return '<span style="height:' + hs[i] + 'px"><b>' + b[2] + '%</b>' + b[1] + '</span>'; }).join('');
 
-/* iconen */
-var ICONS = [["040","Jeneverbes"],["042","Gedroogde chilipeper"],["043","Chilivlokken"],["045","Vanillestokjes"],["052","Saffraankrokus"],["053","Gemalen saffraan"],["054","Dilletak"],["059","Bosje tijm"],["074","Buisje saffraan"],["075","Verse koriander"],["081","Hoopje dille"],["083","Vijzel met peperkorrels"],["084","Kruidenpot met kurk"],["094","Kruidenzakje"],["097","Lei met dille en krijtje"],["100","Theezeefje met dille"]];
-document.getElementById('icons').innerHTML = ICONS.map(function(c){
-  return '<figure><img class="tq" src="brand/icons/' + c[0] + '-real-drie-kwart.webp" alt="' + c[1] + ', schuin van boven" width="480" height="480"><img class="top" src="brand/icons/' + c[0] + '-real-boven.webp" alt="' + c[1] + ', recht van boven" width="480" height="480" loading="lazy">' + c[1] + '</figure>';
+/* iconen: SVG klein, Blender toon groot */
+document.getElementById('kast').innerHTML = SPICES.map(function(s){
+  var k = s[0], n = s[1].toLowerCase(), im = function(src, alt, cap){ return '<span><img src="brand/icons/' + src + '" alt="' + alt + '" width="192" height="192" loading="lazy">' + cap + '</span>'; };
+  return '<figure><h4>' + s[1] + '<small>' + s[4] + '</small></h4><div class="four">' +
+    im('svg/' + k + '-heel.svg', s[1] + ' heel, SVG', 'SVG heel') + im('svg/' + k + '-gemalen.svg', s[1] + ' gemalen, SVG', 'SVG gemalen') +
+    im('toon/' + k + '-heel.webp', s[1] + ' heel, Blender', 'Blender heel') + im('toon/' + k + '-gemalen.webp', s[1] + ' gemalen, Blender', 'Blender gemalen') + '</div></figure>';
 }).join('');
-document.getElementById('onboard').innerHTML = ["052","054","045","083","059","084"].map(function(n){ return '<img src="brand/icons/' + n + '-real-drie-kwart.webp" alt="" width="96" height="96">'; }).join('');
-document.querySelectorAll('.toggle button').forEach(function(b){
-  b.addEventListener('click', function(){
-    document.querySelectorAll('.toggle button').forEach(function(x){ x.setAttribute('aria-pressed', x === b); });
-    document.getElementById('icons').classList.toggle('boven', b.dataset.view === 'boven');
-  });
-});
+document.getElementById('ob-svg').innerHTML = SPICES.map(function(s, i){ return '<img class="' + (i % 2 ? 's48' : 's32') + '" src="brand/icons/svg/' + s[0] + '-heel.svg" alt="" width="48" height="48">'; }).join('');
+document.getElementById('ob-toon').innerHTML = SPICES.map(function(s){ return '<img class="s96" src="brand/icons/toon/' + s[0] + '-heel.webp" alt="" width="96" height="96" loading="lazy">'; }).join('');
+document.getElementById('hist-toon').innerHTML = ["kanel","paprika","einer","dill"].map(function(k){ return '<img src="brand/icons/toon/' + k + '-heel.webp" alt="" width="384" height="384" loading="lazy">'; }).join('');
 </script>
 </body>
 </html>
