@@ -568,6 +568,48 @@
     .kapkaart .kaptitel { font-size: var(--t-24); }
     #intro h3 { font-size: var(--t-32); }
   }
+  /* telefoon met het schermtoetsenbord open (body.kb, zie kbZet): compact bord; de richel en de krijtjes blijven, die maken het een schoolbord */
+  @media (max-width: 600px) {
+    html:has(body.kb) { scroll-padding-bottom: 0; }
+    body.kb #kop, body.kb #voetmotto, body.kb #hulptekst, body.kb #soort, body.kb #bordkop .turfblok { display: none; }
+    body.kb #wrap { padding-top: 4px; }
+    body.kb #overhoor .board { padding: 8px 14px 14px; }
+    body.kb #bordkop { flex-wrap: nowrap; align-items: center; margin: 0 0 2px; }
+    body.kb #bordkop .tellers { margin: 0; font-size: 13px; } body.kb #bordkop .tellers b { font-size: 16px; }
+    body.kb #bordkop .pauze { width: 32px; height: 32px; margin: -2px -6px 0 auto; }
+    body.kb #kaart .instructie, body.kb #vraagtaal { font-size: 14px; line-height: 1.3; margin: 0; }
+    body.kb #kaart > .vraag { font-size: 28px; margin-top: 2px; }
+    body.kb #kaart.lang > .vraag, body.kb #kaart.langer > .vraag { font-size: 20px; line-height: 1.2; }
+    body.kb #kaart .bojning { font-size: 14px; margin-top: 0; }
+    body.kb #kaart #kaartachter { margin-top: 2px; } body.kb #kaartachter .vraag { font-size: 22px; }
+    body.kb #spellingtoon, body.kb #bordmerk .written { font-size: 26px; line-height: 1.15; margin-top: 2px; }
+    body.kb #kaart:is(.lang, .langer) :is(#spellingtoon, #bordmerk .written) { font-size: 20px; }
+    body.kb #spreekvraag { width: 32px; height: 32px; vertical-align: middle; }
+    body.kb #bordmerk .mark { width: 40px; height: 40px; bottom: 14px; }
+    body.kb #nogmaals { min-height: 36px; padding: 0 12px; font-size: 15px; }
+    body.kb .ledge { height: 12px; }
+    body.kb #typen { padding-top: 4px; }
+    body.kb #antwoord { font-size: 24px; padding-bottom: 4px; min-height: 40px; }
+    body.kb #controleer.inveld { min-height: 40px; margin-bottom: 4px; }
+    body.kb #typen .tekens { margin-top: 6px; gap: 6px; }
+    body.kb #typen .tekens button { min-width: 44px; min-height: 34px; font-size: 18px; padding: 0; }
+    body.kb #typen .tekens button:nth-child(n+4) { display: none; }
+    body.kb #melding { min-height: 0; }
+    body.kb #melding .fb { margin-top: 4px; padding-bottom: 6px; }
+    body.kb .fb.goed { font-size: 18px; } body.kb .fb.let { font-size: 15px; line-height: 1.3; }
+    body.kb #oefenvlak > .knoppen { position: static; padding: 6px var(--s2) 0; margin-top: 2px; box-shadow: none; } /* sticky onderaan zou achter het toetsenbord vallen */
+    body.kb #oefenvlak > .knoppen .knop { min-height: 44px; }
+    /* na een fout of typfout: het goede antwoord staat op het bord; kop van het bord en het tweede antwoord eronder weg */
+    body.kb #oefenvlak:has(.fb.fout, .fb.typo) :is(#bordkop, #instructie, #vraagtaal, #luisterlinks, #spreekvraag) { display: none; }
+    body.kb #oefenvlak:has(.fb.fout, .fb.typo) .tekens { display: none; }
+    body.kb .fb.fout { font-size: 0; line-height: 1.3; }
+    body.kb .fb.fout .nietgoed { display: inline; font-size: 18px; margin-right: 8px; }
+    body.kb .fb.fout br, body.kb .fb.fout .spreek, body.kb .fb div.klein { display: none; }
+    body.kb .fb.fout span.klein { display: block; font-size: 14px; }
+    body.kb #ikhadhetgoed { min-height: 32px; padding: 0 12px; font-size: 14px; margin: 0; vertical-align: middle; }
+    body.kb .tdec .says { font-size: 14px; margin-top: 2px; } body.kb .tdec .tw { font-size: 22px; margin-top: 0; } body.kb #kaart:is(.lang, .langer) .tdec .tw { font-size: 18px; }
+    body.kb .pair2 { flex-flow: row nowrap; gap: 8px; margin-top: 6px; } body.kb .pair2 > * { flex: 1; min-width: 0; width: auto; padding: 6px; min-height: 44px; gap: 6px; font-size: 15px; white-space: normal; } body.kb .pair2 > * > svg { width: 24px; height: auto; }
+  }
   @media (max-width: 360px) { .tellers { flex-wrap: wrap; } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .draw { stroke-dashoffset: 0; } }
 </style>
@@ -1241,7 +1283,7 @@
     if (s === "luister") tekenLuister();
     $("overhoorbalk").classList.toggle("verborgen", s !== "keuze" || !gekozenLijsten().length);
     $("speel").hidden = s !== "keuze" && s !== "lijst";
-    $("wissel").hidden = s !== "overhoor"; document.body.classList.toggle("oefent", s === "overhoor");
+    $("wissel").hidden = s !== "overhoor"; document.body.classList.toggle("oefent", s === "overhoor"); if (s !== "overhoor") document.body.classList.remove("kb");
     var std = { methode: basisPad().slice(0, 1), keuze: basisPad(), mijn: [["Manage my lists"]], instellingen: [["Settings"]], overhoor: [["Practising"]], eind: [["Result"]],
       leerpad: [["Study path"]], leerpadkap: padKapPad(), luister: [["Listening", "methode"], ["Listen to texts"]] };
     var p = [["Krydder", "start"]].concat(pad || std[s] || []);
@@ -1622,6 +1664,7 @@
       leren: "Enter = check. A word you get wrong comes back later.", toets: "Every word once, no repeats. You get a grade at the end.",
       dictee: "Listen and type what you hear. A word you get wrong comes back later.", spelling: "Remember it, then type it from memory.",
       meerkeuze: "Pick the right answer (or press 1 to 4).", flashcards: "Tap the card or Flip; then say honestly whether you knew it." }[m];
+    if (document.body.classList.contains("kb")) kbInBeeld(); // andere fase, andere hoogte: veld en Continue in beeld houden
   }
   function teller() {
     var s = sessie, n = s.items.length, leren = s.methode === "leren";
@@ -2240,6 +2283,31 @@
     else if (f === "feedback") volgende();
     else if (isTypen(vorm())) nakijken();
   };
+  // telefoon: zolang het antwoordveld focus heeft staat het schermtoetsenbord open, dan een compact bord (body.kb)
+  var kbScherm = matchMedia("(max-width: 600px) and (pointer: coarse)"), vv = window.visualViewport, kbGezien = false, kbRaf = 0;
+  function kbZet(aan) {
+    aan = aan && kbScherm.matches && scherm === "overhoor" && document.activeElement === $("antwoord");
+    if (aan !== document.body.classList.contains("kb")) { document.body.classList.toggle("kb", aan); kbGezien = false; pasIn($("vraag").parentNode); }
+    if (aan) kbInBeeld();
+  }
+  function kbInBeeld() { // bord bovenaan het zichtbare stuk; past het niet, dan wint de onderkant (veld, of Continue na een fout)
+    clearTimeout(kbRaf);
+    kbRaf = setTimeout(function () { // na de eigen scroll van de browser naar het focusveld (WebKit doet die pas na de toets)
+      if (!document.body.classList.contains("kb")) return;
+      var top = vv ? vv.offsetTop : 0, h = vv ? vv.height : innerHeight, c = $("controleer"), r = function (e) { return e.getBoundingClientRect(); };
+      var boven = r($("kaart")).top - 4 - top, keus = document.querySelector("#bordmerk .pair2"); // typfout: de keuzeknoppen op het bord en de richel tellen, niet het veld
+      var onder = (keus ? r($("kaartrichel")).bottom : Math.max(r($("antwoord")).bottom, c.offsetParent ? r(c).bottom : 0)) + 6 - top - h;
+      var d = Math.max(boven, onder); if (Math.abs(d) > 1) window.scrollBy(0, d);
+    }, 60);
+  }
+  $("antwoord").addEventListener("focus", function () { kbZet(true); });
+  $("antwoord").addEventListener("blur", function () { setTimeout(function () { kbZet(document.activeElement === $("antwoord")); }, 0); }); // even wachten: focus kan meteen terugkomen
+  if (vv) vv.addEventListener("resize", function () { // Android: toetsenbord dicht (terugknop) zonder blur; opnieuw tikken op het veld opent het weer zonder focus
+    var open = vv.height * vv.scale < document.documentElement.clientHeight - 100;
+    if (open) { kbZet(true); kbGezien = document.body.classList.contains("kb"); }
+    else if (kbGezien) kbZet(false);
+    else kbZet(true); // geen toetsenbord gemeten: alleen opnieuw in beeld houden
+  });
   $("antwoord").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); if (sessie && sessie.fase === "typo") fbKnop("goed"); else $("controleer").onclick(); } });
   // werkblad: actief veld onthouden voor de æøå-knoppen, Enter = volgend veld (laatste: nakijken)
   $("wbinhoud").addEventListener("focusin", function (e) { if (e.target.classList.contains("wbveld")) actiefVeld = e.target; });
