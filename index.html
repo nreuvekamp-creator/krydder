@@ -209,6 +209,10 @@
   .m b { font-family: var(--f-board); font-weight: 500; font-size: 32px; line-height: 1.15; white-space: nowrap; }
   .m span.klein { font-size: var(--t-body); margin-top: 4px; }
   .m svg { display: block; width: 120px; height: 12px; margin-top: 4px; }
+  /* methode-icoon rechts op de kaart, titel en uitleg links */
+  .m { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--s2); align-content: start; }
+  .m > b, .m > span.klein { grid-column: 1; }
+  .m > img { grid-column: 2; grid-row: 1 / span 2; align-self: center; width: 56px; height: 56px; }
 
   /* stap 3 en lijstweergave */
   .richting { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; font-size: var(--t-small); color: var(--soft); margin: 8px 0; }
@@ -512,6 +516,9 @@
     #methodetegels, .meerlijst { grid-template-columns: 1fr; gap: var(--s15); }
     .m { padding: var(--s3); }
     .m b { font-size: var(--t-32); }
+    .m { column-gap: var(--s15); }
+    .m b { white-space: normal; }  /* smalle telefoon: titel breekt af in plaats van onder het icoon te lopen */
+    .m > img { width: 48px; height: 48px; }
     .mark { width: 64px; height: 64px; right: var(--s3); top: var(--s4); }
     .eindkruid { width: 72px; height: 72px; right: var(--s3); top: var(--s3); }
     .kruidgroot { width: 72px; height: 72px; }
@@ -831,10 +838,11 @@
     return l.filter(geldigeLijst).map(function (x) { return { id: x.id, titel: String(x.titel == null ? "Untitled" : x.titel), woorden: x.woorden.filter(function (w) { return Array.isArray(w) && w[0] != null && w[1] != null; }).map(function (w) { return [String(w[0]), String(w[1])]; }) }; });
   }
   function bewaarMijn(l) { return zet(OPSLAG, JSON.stringify(l)); }
-  var inst = { thema: "auto", kopie: true, overslaan: false, goedrekenen: false, uitspraak: false, overtypen: false, rondes: 1, nafout: "2500", richting: "no-nl", uitlegWeg: {}, stem: { nb: "", en: "" }, aiBannerWeg: false };
+  var inst = { v: 2, thema: "auto", kopie: true, overslaan: false, goedrekenen: true, uitspraak: false, overtypen: false, rondes: 1, nafout: "2500", richting: "no-nl", uitlegWeg: {}, stem: { nb: "", en: "" }, aiBannerWeg: false };
   (function () {
     var o = lees(INST, isObj); if (!o) return;
     for (var k in inst) if (k in o && typeof o[k] === typeof inst[k] && (typeof inst[k] !== "object" || isObj(o[k]))) inst[k] = o[k];
+    if (o.v !== 2) { inst.v = 2; inst.goedrekenen = true; } // versie 2: "I was right" staat voortaan standaard aan, ook voor wie het al had opgeslagen
     var mag = { thema: ["auto", "licht", "donker"], rondes: [1, 2, 3, 4], nafout: ["2500", "5000", "zelf"], richting: ["no-nl", "nl-no", "mix"] };
     for (k in mag) if (mag[k].indexOf(inst[k]) < 0) inst[k] = mag[k][0];
   })();
@@ -1341,10 +1349,10 @@
   function tekenMethodes() {
     var ls = bronLijsten(), stem = heeftNoorseStem(), wb = ls.some(werkbladLijst);
     $("methodekop").textContent = bronNaam(bronKeuze) + ": how do you want to practise?";
-    var tegels = bronKeuze === "luister" && LUISTER.length ? ["<button class='tegel m' data-methode='luisteren'><b>Listen to texts</b><span class='klein'>Play the book audio per chapter, with the text to read along when available</span></button>"] : [];
+    var tegels = bronKeuze === "luister" && LUISTER.length ? ["<button class='tegel m' data-methode='luisteren'><img src='img/methodes/luisteren.svg' alt='' aria-hidden='true'><b>Listen to texts</b><span class='klein'>Play the book audio per chapter, with the text to read along when available</span></button>"] : [];
     if (bronKeuze !== "luister" || ls.length) tegels = tegels.concat(VOLGORDE.map(function (m) {
       var uit = m === "dictee" && !stem ? "No Norwegian voice installed on this device (see Settings)" : m === "werkblad" && !wb ? "Only for exercise lists (fill in the blanks)" : "";
-      return "<button class='tegel m' data-methode='" + m + "'" + (uit ? " disabled" : "") + "><b>" + METHODES[m] + (m === "leren" ? " <span class='label'>RECOMMENDED</span>" : "") + "</b>" +
+      return "<button class='tegel m' data-methode='" + m + "'" + (uit ? " disabled" : "") + "><img src='img/methodes/" + m + ".svg' alt='' aria-hidden='true'><b>" + METHODES[m] + (m === "leren" ? " <span class='label'>RECOMMENDED</span>" : "") + "</b>" +
         "<span class='klein'>" + esc(uit || KORT[m]) + "</span></button>";
     }));
     // Learn, Test en Multiple choice (en bij Listening: luisteren en dictee) zichtbaar, de rest achter More methods
@@ -1633,16 +1641,16 @@
     var KLEUR = { g: "var(--chalk-safran)", h: "var(--chalk)", w: "var(--chalk)", r: "var(--chalk-fout)" };
     s.items.slice().sort(function (a, b) { return (a.plek || 1e9) - (b.plek || 1e9); }).forEach(function (it, i) {
       var st = streepStand(it, leren), kr = it.kr || (it.kr = []);
-      if (st && kr[kr.length - 1] !== st) { kr.push(st); if (kr.length > 4) kr.shift(); } // ponytail: hooguit 4 lagen krijt per woord
-      var x = 4 + (i % STREEP_RIJ) * 9 + rnd(i, 1) * 2, y = Math.floor(i / STREEP_RIJ) * 30;
+      if (st && kr[kr.length - 1] !== st) { kr.push(st); if (kr.length > 5) kr.shift(); } // ponytail: hooguit 5 lagen krijt per woord
+      var x = 6 + (i % STREEP_RIJ) * 11 + rnd(i, 1) * 2, y = Math.floor(i / STREEP_RIJ) * 30;
       g += "<circle cx='" + (x + rnd(i, 7)).toFixed(1) + "' cy='" + (y + 25 + rnd(i, 8) * 2).toFixed(1) + "' r='" + (1.7 + rnd(i, 9) * .5).toFixed(1) + "' fill='var(--chalk)' fill-opacity='.7'/>";
       kr.forEach(function (k, l) {
-        var r = function (n) { return rnd(i * 7 + l, n); }, xl = x + r(1) * 1.6;
+        var r = function (n) { return rnd(i * 7 + l, n); }, xl = x + (l - (kr.length - 1) / 2) * 1.7 + r(1) * .6; // elke laag iets opzij, zodat alle eerdere strepen zichtbaar blijven
         g += "<path d='M" + xl.toFixed(1) + " " + (y + 4 + r(2) * 4).toFixed(1) + " L" + (xl + r(3) * 2.4).toFixed(1) + " " + (y + 25 + r(4) * 3).toFixed(1) +
           "' stroke='" + KLEUR[k] + "' stroke-width='" + (3.4 + r(5) * .8).toFixed(1) + "'" + (k === "h" ? " stroke-opacity='.55'" : "") + " stroke-linecap='round' fill='none'/>";
       });
     });
-    var w = 8 + Math.min(s.items.length, STREEP_RIJ) * 9, h = Math.ceil(s.items.length / STREEP_RIJ) * 30;
+    var w = 12 + Math.min(s.items.length, STREEP_RIJ) * 11, h = Math.ceil(s.items.length / STREEP_RIJ) * 30;
     return "<svg class='chalk' width='" + w + "' height='" + h + "' viewBox='0 0 " + w + " " + h + "'>" + g + "</svg>";
   }
   function kiesVolgende(s) {
@@ -1678,13 +1686,16 @@
     $("spreekvraag").hidden = luister;
     $("instructie").textContent = m === "dictee" && !it.tts ? "" : it.instructie;
     $("vraagtaal").textContent = s.fase === "paar" ? "Learn this pair" : s.fase === "kopie" ? "New word: copy the answer" : luister ? (it.aNoors && it.a === it.q ? "Listen and type what you hear:" : it.tts ? "Listen and answer:" : "Listen and type the Norwegian word:") : horen && !nieuw ? "No Norwegian voice on this device, so read it instead and type it:" : it.vast ? "Give the answer:" : it.aKant === 0 ? "Translate into Norwegian:" : "Translate into " + taalNaam(it.taal) + ":";
+    var kaal = function (t) { return String(t || "").replace(/[:.\s]+$/, "").toLowerCase(); };
+    if (kaal($("vraagtaal").textContent) === kaal($("instructie").textContent)) $("vraagtaal").textContent = ""; // niet twee keer dezelfde zin
     if (nieuw) toonAchter(it);
     if (luister) { $("nogmaals").hidden = false; $("nogmaals").textContent = it.seg ? "Play this sentence from the recording" : "Play again"; speelVraag(it, true); }
     else if (inst.uitspraak && it.qCode === "nb") spreek(it.q, "nb", true);
     if (it.tts && it.tekstId && LUISTER.some(function (t) { return t.id === it.tekstId; })) { $("heletekst").hidden = false; $("heletekst").dataset.tekst = it.tekstId; }
     if (m === "spelling") {
       $("spellingtoon").textContent = it.a; $("spellingtoon").hidden = false;
-      var tok = s.token; setTimeout(function () { if (sessie === s && s.token === tok && s.fase === "kijk") begintypen(); }, toontijd());
+      var tok = s.token; // een zin (3+ woorden) blijft staan tot "I've memorised it"; een woord verdwijnt vanzelf
+      if (it.a.trim().split(/\s+/).length < 3) setTimeout(function () { if (sessie === s && s.token === tok && s.fase === "kijk") begintypen(); }, toontijd());
     }
     if (m === "meerkeuze" && !nieuw) tekenMK(it);
     $("typen").querySelector(".tekens").hidden = !it.aNoors;
