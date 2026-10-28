@@ -227,7 +227,7 @@
   input[type=checkbox].rond { appearance: none; -webkit-appearance: none; width: 28px; height: 28px; border: 2px solid var(--soft); border-radius: 50%; margin: 0; cursor: pointer; vertical-align: middle; position: relative; background: var(--paper); }
   input[type=checkbox].rond:checked { background: var(--ink); border-color: var(--ink); }
   input[type=checkbox].rond:checked::after { content: ""; position: absolute; left: 8px; top: 3px; width: 7px; height: 13px; border: solid var(--paper); border-width: 0 3px 3px 0; transform: rotate(45deg); }
-  .spreek { background: none; border: 0; color: var(--ink); cursor: pointer; width: 40px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
+  .spreek { background: none; border: 0; color: var(--ink); cursor: pointer; width: 44px; height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
   .spreek:hover { background: var(--hover); }
   .board .spreek { color: var(--chalk); } .board .spreek:hover { background: rgba(255,255,255,.08); }
   .geen-en .spk-en, .geen-nl .spk-nl { display: none; }
@@ -314,7 +314,7 @@
   #kaartachter .vraag { font-style: italic; font-size: var(--t-40); color: var(--chalk); filter: url(#chalkL); }
   #kaart.lang #kaartachter .vraag, #kaart.langer #kaartachter .vraag { font-size: var(--t-32); }
   #spellingtoon { font-family: var(--f-board); font-style: italic; font-size: 60px; line-height: 1.1; color: var(--chalk); margin: var(--s2) 0 0; filter: url(#chalkL); overflow-wrap: anywhere; }
-  .mark { position: absolute; right: var(--s5); top: 88px; width: 110px; height: 110px; }
+  .mark { position: absolute; right: var(--s5); bottom: var(--s4); width: 110px; height: 110px; } /* onderaan: bovenin staan teller en pauze */
   .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.1s .15s cubic-bezier(.4,.1,.2,1) forwards; }
   @keyframes draw { to { stroke-dashoffset: 0; } }
   .written { font-family: var(--f-board); font-style: italic; font-weight: 500; font-size: 60px; line-height: 1.1; margin-top: var(--s3); color: var(--sp-chalk, var(--chalk)); filter: url(#chalkL); overflow-wrap: anywhere; }
@@ -333,12 +333,11 @@
   #mkopties button { text-align: left; min-height: 64px; padding: 12px 16px; border: 0; border-bottom: 2px solid var(--lijn); border-radius: 0; background: none; color: var(--ink); cursor: pointer; font-family: var(--f-board); font-size: 32px; line-height: 1.2; overflow-wrap: anywhere; }
   #mkopties button:hover:not(:disabled) { background: var(--hover); }
   #oefenvlak:has(#kaart.lang, #kaart.langer) #mkopties button { font-size: var(--t-20); min-height: 48px; padding: 8px 16px; }
-  #mkopties button.goed { background: var(--goed); color: #fff; border-bottom-color: var(--goed); font-weight: 600; }
-  #mkopties button.goed::after { content: ""; display: inline-block; width: 30px; height: 30px; margin-left: 14px; vertical-align: -4px; background: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath d='M5 16 C 8 18, 10 21, 12 24 C 15 17, 20 10, 26 5' fill='none' stroke='%235c7a35' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"); }
-  #mkopties button.fout { background: var(--fout); color: #fff; border-bottom-color: var(--fout); }
+  #mkopties button.goed { background: var(--goed); color: var(--paper); border-bottom-color: var(--goed); font-weight: 600; }
+  #mkopties button.goed::after { content: ""; display: inline-block; width: 30px; height: 30px; margin-left: 14px; vertical-align: -4px; background: currentColor; -webkit-mask: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath d='M5 16 C 8 18, 10 21, 12 24 C 15 17, 20 10, 26 5' fill='none' stroke='%23000' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"); mask: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath d='M5 16 C 8 18, 10 21, 12 24 C 15 17, 20 10, 26 5' fill='none' stroke='%23000' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  #mkopties button.fout { background: var(--fout); color: var(--paper); border-bottom-color: var(--fout); }
   #mkopties button:disabled { cursor: default; }
-  #mkopties button.goed:disabled, #mkopties button.fout:disabled { color: #fff; }
-  #mkopties button.goed::after { filter: brightness(0) invert(1); }
+  #mkopties button.goed:disabled, #mkopties button.fout:disabled { color: var(--paper); }
   /* terugmelding onder het bord: rustig, geen rood */
   .fb { position: relative; overflow: hidden; padding: 0 0 12px; margin-top: var(--s2); font-size: var(--t-body); animation: omhoog .5s ease-out; }
   @keyframes omhoog { from { opacity: 0; transform: translateY(6px); } }
@@ -522,7 +521,7 @@
     .m { column-gap: var(--s15); }
     .m b { white-space: normal; }  /* smalle telefoon: titel breekt af in plaats van onder het icoon te lopen */
     .m > img { width: 48px; height: 48px; }
-    .mark { width: 64px; height: 64px; right: var(--s3); top: var(--s4); }
+    .mark { width: 64px; height: 64px; right: var(--s3); bottom: var(--s3); }
     .eindkruid { width: 72px; height: 72px; right: var(--s3); top: var(--s3); }
     .kruidgroot { width: 72px; height: 72px; }
     #overhoor .board { padding: var(--s3); }
@@ -532,7 +531,7 @@
     /* tellerrij: altijd één regel, tellers links, wissel en Stop rechts */
     .tellers { font-size: var(--t-14); gap: 4px 12px; }
     .tellers b { font-size: var(--t-16); }
-    #wissel { max-width: 104px; min-height: 36px; font-size: var(--t-14); padding: 4px; }
+    #wissel { max-width: 160px; min-height: 36px; font-size: var(--t-14); padding: 4px; }
     body.oefent #pad { display: none; }
     #controleer.inveld { padding: 0 var(--s2); }
     #controleer.inveld::before { display: none; }
@@ -600,8 +599,8 @@
   <!-- STAP 1: BRON -->
   <section id="start">
     <div id="hervat" class="instructie" hidden><span id="hervattekst"></span><button class="knop" id="hervatknop">Resume</button><button class="knop grijs" id="weggooien">Discard</button></div>
-    <div id="aibanner" class="instructie" hidden><span>Get the natural Norwegian AI voice (≈93 MB, once, works offline).</span><progress id="aib_pr" max="1" hidden></progress><button class="knop" id="aib_dl">Download</button><button class="knop grijs" id="aib_weg">Not now</button></div>
     <div id="thuisbord"></div>
+    <div id="aibanner" class="instructie" hidden><span>Get the natural Norwegian AI voice (≈93 MB, once, works offline).</span><progress id="aib_pr" max="1" hidden></progress><button class="knop grijs" id="aib_dl">Download</button><button class="knop grijs" id="aib_weg">Not now</button></div>
     <h2 class="vh">What do you want to practise?</h2>
     <div class="tegelrij" id="brontegels"></div>
   </section>
@@ -644,8 +643,8 @@
 
   <!-- OVERHOREN -->
   <section id="overhoor" class="verborgen">
-    <div id="bordkop"><div class="turfblok"><div id="turf" aria-hidden="true"></div></div>
-      <div class="tellers"><span>to go: <b id="tegaan">0</b></span><span class="g">correct: <b id="tgoed">0</b></span><span class="f" id="tfoutwrap">wrong: <b id="tfout">0</b></span><span id="wbteller"></span></div>
+    <div id="bordkop"><div class="turfblok" title="Dot = not asked yet, yellow = seen, green = right, red = wrong"><div id="turf" aria-hidden="true"></div><span class="vh" id="turftekst"></span></div>
+      <div class="tellers"><span>to go: <b id="tegaan">0</b></span><span id="wbteller"></span></div>
       <button class="pauze" id="stop" aria-label="Pause" title="Pause"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1.5" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1.5" fill="currentColor"/></svg></button></div>
     <div id="intro" class="board" hidden><h3 id="introtitel"></h3><p id="introtekst"></p><button class="knop" id="introstart">Start</button><br><label class="klein"><input type="checkbox" id="introweg"> Don't show this explanation again</label></div>
     <div id="oefenvlak">
@@ -818,6 +817,7 @@
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function schud(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function pct(x) { return Math.round(100 * x) + "%"; }
+  function aantal(n, w, mv) { return n + " " + (n === 1 ? w : mv || w + "s"); } // 1 word, 2 words
 
   // ---------- opslag (alles in try/catch: kan geblokkeerd zijn) ----------
   // kapotte opslag mag de site nooit breken: alles wat niet de verwachte vorm heeft wordt weggegooid (met één melding)
@@ -947,8 +947,14 @@
   function stemmenVoor(code) {
     if (!("speechSynthesis" in window)) return [];
     var re = code === "nb" ? /^(nb|no|nn)([-_]|$)/i : code === "nl" ? /^nl([-_]|$)/i : /^en([-_]|$)/i;
-    return (speechSynthesis.getVoices() || []).filter(function (x) { return re.test(x.lang || ""); });
+    var pas = (speechSynthesis.getVoices() || []).filter(function (x) { return re.test(x.lang || ""); });
+    if (code !== "en") return pas;
+    pas = pas.filter(function (x) { return !GRAPSTEM.test(x.name); });
+    var gbus = pas.filter(function (x) { return /^en[-_](GB|US)/i.test(x.lang); });
+    return gbus.length ? gbus : pas;
   }
+  // macOS-novelty en Eloquence-stemmen: grappig of robotachtig, niet om Engels mee te leren
+  var GRAPSTEM = /^(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Jester|Junior|Kathy|Organ|Pipe Organ|Ralph|Fred|Superstar|Trinoids|Whisper|Wobble|Zarvox|Eddy|Flo|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley)\b/i;
   function stemId(x) { return x.voiceURI || x.name; }
   function stemVoor(code) {
     var pas = stemmenVoor(code), gekozen = (inst.stem || {})[code];
@@ -1306,7 +1312,7 @@
     var nu = huidigeKap();
     return "<h3 class='kapkop'>Your chapters</h3><p class='klein legenda'>Each line fills as you practise. A chapter is passed when you score 80% on its quiz.</p><div class='chaps'>" + boekKaps().map(function (k) {
       var s = kapStatus(k), af = s.st === "af", p = af ? 100 : s.n ? Math.round(100 * s.af / s.n) : 0, isNu = k === nu;
-      return "<button class='chap" + (isNu ? " now" : "") + "' data-thuiskap='" + k.id + "' aria-label='Chapter " + k.n + ", " + esc(kapNaam(k)) + ": " + (af ? "passed" : s.af + " of " + s.n + " steps done") + "'><span class='n'>" + k.n + "</span><span class='t'>" + esc(kapNaam(k)) + "</span>" +
+      return "<button class='chap" + (isNu ? " now" : "") + "' data-thuiskap='" + k.id + "' aria-label='Chapter " + k.n + ", " + esc(kapNaam(k)) + ": " + (af ? "passed" : s.af + " of " + aantal(s.n, "step") + " done") + "'><span class='n'>" + k.n + "</span><span class='t'>" + esc(kapNaam(k)) + "</span>" +
         krijtlijn(p, "var(--chalk)", false) + (af ? krijtvink("var(--chalk)") : "<span></span>") + "</button>";
     }).join("") + "</div>";
   }
@@ -1318,8 +1324,8 @@
       h += "<div class='welcome'>" + (wacht ? wacht + (wacht === 1 ? " word waits" : " words wait") + " for you in <span class='nowrap'>" + esc(kapNaam(k)) + "</span>" : "You know every word in <span class='nowrap'>" + esc(kapNaam(k)) + "</span>. Time for the chapter quiz.") + "</div>" +
         "<div class='bs'>Chapter " + k.n + " quiz: " + (q != null ? "best score " + pct(q) : "not taken yet") + ". You pass at 80%.</div>";
     } else if (kaps.length) h += "<div class='welcome'>Every chapter is passed. Well done.</div>";
-    h += (kaps.length ? kapRijen() : "") + "<div class='cta'>" + (k ? "<button class='knop' data-thuisverder='" + k.id + "'>Continue chapter " + k.n + "</button>" : "<button class='knop' data-naar='leerpad'>Open the study path</button>") +
-      "<button class='link' id='anders'>Choose something else</button></div></div>" + richel();
+    h += "<div class='cta'>" + (k ? "<button class='knop' data-thuisverder='" + k.id + "'>Continue chapter " + k.n + "</button>" : "<button class='knop' data-naar='leerpad'>Open the study path</button>") +
+      "<button class='link' id='anders'>Choose something else</button></div>" + (kaps.length ? kapRijen() : "") + "</div>" + richel();
     $("thuisbord").innerHTML = h;
   }
 
@@ -1403,7 +1409,7 @@
   function werkBalkBij() {
     var ls = gekozenLijsten(), n = telWoorden(ls);
     $("overhoorbalk").classList.toggle("verborgen", scherm !== "keuze" || !ls.length);
-    $("balktekst").textContent = ls.length + (ls.length === 1 ? " list, " : " lists, ") + n + " words";
+    $("balktekst").textContent = aantal(ls.length, "list") + ", " + aantal(n, "word");
     if (scherm === "keuze") {
       var m = moeilijkeParen(ls.length ? ls : bronLijsten()).length;
       $("moeilijkblok").hidden = !m;
@@ -1426,10 +1432,10 @@
   }
   function tekenOefenMenus() {
     var ls = gekozenLijsten(), n = telWoorden(ls), m = methodeKeuze && METHODES[methodeKeuze] ? methodeKeuze : "leren";
-    $("boefen").innerHTML = oefenHTML("begin", "Start " + METHODES[m] + " (" + n + " words" + (ls.length > 1 ? ", mixed" : "") + ")", ls, m);
+    $("boefen").innerHTML = oefenHTML("begin", "Start " + METHODES[m] + " (" + aantal(n, "word") + (ls.length > 1 ? ", mixed" : "") + ")", ls, m);
     if (huidigeLijst) {
       var k = gekozenWoorden(huidigeLijst).length, tot = (huidigeLijst.woorden || []).filter(bruikbaar).length;
-      $("loefen").innerHTML = oefenHTML("lbegin", k === tot ? "Practise all words" : "Practise " + k + " selected words", [huidigeLijst], m);
+      $("loefen").innerHTML = oefenHTML("lbegin", k === tot ? "Practise all words" : "Practise " + aantal(k, "selected word"), [huidigeLijst], m);
     }
   }
 
@@ -1474,7 +1480,7 @@
   window.__sessie = function () { return sessie; }; // voor tests
   var UITLEG = {
     leren: "A new word is first shown as a pair" + " (you type the answer over once)" + ", then as a multiple-choice question, and only then do you type it yourself. You practise in blocks of " + BLOK + "; a word is learned when you type it right " + GELEERD_NA + " times in a row. If you type it wrong, the multiple-choice question comes back first.",
-    toets: "Every word comes by once, without repeats. At the end you get a grade and see what you got wrong.",
+    toets: "Every word comes by once, without repeats. You see right away whether you were right; at the end you get a grade and a list of your mistakes.",
     dictee: "You hear a Norwegian word or sentence. Type what you hear.",
     spelling: "The word appears briefly and then disappears: type it from memory. The better you do, the shorter you see the word.",
     meerkeuze: "Each time, pick the right answer from four options.",
@@ -1528,7 +1534,7 @@
     begin(methode);
     if (inst.uitlegWeg[methode]) { $("overhoor").classList.remove("intro"); $("intro").hidden = true; return volgende(); }
     sessie.fase = "intro"; $("overhoor").classList.add("intro"); $("intro").hidden = false;
-    $("introtitel").textContent = quiz ? "Chapter quiz" : METHODES[methode]; $("introtekst").textContent = quiz ? "A Test with " + items.length + " questions from this chapter. Score 80% or more to complete the chapter. You can retake it as often as you like; your best score counts." : UITLEG[methode]; $("introweg").checked = false;
+    $("introtitel").textContent = quiz ? "Chapter quiz" : METHODES[methode]; $("introtekst").textContent = quiz ? "A Test with " + aantal(items.length, "question") + " from this chapter. Score 80% or more to complete the chapter. You can retake it as often as you like; your best score counts." : UITLEG[methode]; $("introweg").checked = false;
     $("introweg").parentNode.hidden = !!quiz;
     teller(); $("introstart").focus();
   }
@@ -1555,7 +1561,7 @@
     var pos = new Map(); s.items.forEach(function (x, i) { pos.set(x, i); });
     var idx = function (a) { return a.map(function (x) { return pos.get(x); }); };
     bewaard = { naam: s.naam, methode: s.methode, goed: s.goed, fout: s.fout, geleerd: s.geleerd, duur: Date.now() - s.begin, quiz: s.quiz, herkomst: herkomst, padKapId: padKapId,
-      tegaan: s.methode === "leren" ? s.items.length - s.geleerd : s.wachtrij.length,
+      tegaan: s.methode === "leren" ? leerStappen(s) : s.wachtrij.length,
       paren: s.paren.map(function (p) { var l = p.l; return { w: p.w, lid: l.id, titel: l.titel, taal: l.taal, vast: l.vast, instructie: l.instructie, tts: l.tts, tekstId: l.tekstId }; }),
       items: s.items.map(function (it) { var c = {}; for (var k in it) if (!NIET_BEWAREN[k]) c[k] = it[k]; return c; }),
       wachtrij: idx(s.wachtrij), blok: idx(s.blok), nieuw: idx(s.nieuw), fouten: idx(s.fouten) };
@@ -1612,9 +1618,9 @@
     $("omdraaien").hidden = !(m === "flashcards" && f === "vraag");
     $("wistik").hidden = $("wistikniet").hidden = !(m === "flashcards" && f === "om");
     $("overslaan").hidden = !(inst.overslaan && (f === "vraag" || f === "kijk"));
-    $("hulptekst").textContent = f === "paar" ? "Look at the pair carefully; you will be tested on it in a moment." : f === "kopie" ? "Type the answer over exactly as you see it. Then you get it as multiple choice." : s.methode === "leren" && m === "meerkeuze" ? "Pick the right answer (or press 1 to 4). After that you type it yourself." : {
-      leren: "Enter = check. A word you get wrong comes back later.", toets: "Every word once. You see your mistakes at the end.",
-      dictee: "Listen and type what you hear. A word you get wrong comes back later.", spelling: "Remember the word and type it.",
+    $("hulptekst").textContent = s.goed || s.fout || f === "kopie" ? "" : f === "paar" ? "Look at the pair carefully; you will be tested on it in a moment." : f === "kopie" ? "Type the answer over exactly as you see it. Then you get it as multiple choice." : s.methode === "leren" && m === "meerkeuze" ? "Pick the right answer (or press 1 to 4). After that you type it yourself." : {
+      leren: "Enter = check. A word you get wrong comes back later.", toets: "Every word once, no repeats. You get a grade at the end.",
+      dictee: "Listen and type what you hear. A word you get wrong comes back later.", spelling: "Remember it, then type it from memory.",
       meerkeuze: "Pick the right answer (or press 1 to 4).", flashcards: "Tap the card or Flip; then say honestly whether you knew it." }[m];
   }
   function teller() {
@@ -1622,12 +1628,16 @@
     var wb = s.methode === "werkblad", velden = wb ? $("wbinhoud").querySelectorAll(".wbveld") : [];
     $("overhoor").classList.toggle("wb", wb);
     if (wb) $("wbteller").textContent = [].filter.call(velden, function (v) { return v.value.trim(); }).length + " of " + velden.length + " filled in";
-    var rest = leren ? n - s.geleerd : s.wachtrij.length + (s.huidig && s.wachtrij.indexOf(s.huidig) < 0 ? 1 : 0);
-    $("tegaan").textContent = rest; $("tgoed").textContent = s.goed; $("tfout").textContent = s.fout;
-    $("tfoutwrap").hidden = leren;
+    var rest = leren ? leerStappen(s) : s.wachtrij.length + (s.huidig && s.wachtrij.indexOf(s.huidig) < 0 ? 1 : 0);
+    $("tegaan").textContent = rest;
     $("turf").innerHTML = turfSvg(s);
+    $("turftekst").textContent = s.items.filter(function (it) { return streepStand(it, leren) === "w"; }).length + " of " + n + (leren ? " learned" : " right");
     var bord = s.fase === "intro" ? $("intro") : wb ? ($("wbinhoud").querySelector(".board") || $("werkblad")) : $("kaart");
     if ($("bordkop").parentNode !== bord) bord.insertBefore($("bordkop"), bord.firstChild);
+  }
+  // Learn: elk woord is paar + meerkeuze + GELEERD_NA keer goed typen; "to go" telt die stappen, zodat hij bij elk goed antwoord zakt
+  function leerStappen(s) {
+    return s.items.reduce(function (n, it) { var r = it.streak || 0; return n + (r >= GELEERD_NA ? 0 : (it.stap ? 0 : 1) + (it.stap === 2 ? 0 : 1) + GELEERD_NA - r); }, 0);
   }
   // per woord een krijtpuntje, zoals een docent telt; daarover komt per stap een nieuwe streep, de vorige blijft eronder zichtbaar:
   // geel = gezien, nog niet goed getypt; half groen = één keer goed (Learn); groen = goed/geleerd; rood krijt = fout. Plek op volgorde van eerst gevraagd.
@@ -1647,9 +1657,9 @@
       var x = 6 + (i % STREEP_RIJ) * 10 + rnd(i, 1) * 2, y = Math.floor(i / STREEP_RIJ) * 30;
       g += "<circle cx='" + (x + rnd(i, 7)).toFixed(1) + "' cy='" + (y + 14.5 + rnd(i, 8) * 2).toFixed(1) + "' r='" + (1.7 + rnd(i, 9) * .5).toFixed(1) + "' fill='var(--chalk)' fill-opacity='.7'/>";
       kr.forEach(function (k, l) {
-        var r = function (n) { return rnd(i * 7 + l, n); }, xl = x + (l - (kr.length - 1) / 2) * .9 + r(1) * .3; // elke laag een fractie opzij: grote overlap, eerdere kleuren blijven als randje zichtbaar
+        var r = function (n) { return rnd(i * 7 + l, n); }, xl = x + (l - (kr.length - 1) / 2) * 1.3 + r(1) * .3; // elke laag een fractie opzij: grote overlap, eerdere kleuren blijven als randje zichtbaar
         g += "<path d='M" + xl.toFixed(1) + " " + (y + 4 + r(2) * 4).toFixed(1) + " L" + (xl + r(3) * 2.4).toFixed(1) + " " + (y + 25 + r(4) * 3).toFixed(1) +
-          "' stroke='" + KLEUR[k] + "' stroke-width='" + (3.4 + r(5) * .8).toFixed(1) + "'" + (k === "h" ? " stroke-opacity='.55'" : "") + " stroke-linecap='round' fill='none'/>";
+          "' stroke='" + KLEUR[k] + "' stroke-width='" + ((l ? 3.4 : 5) + r(5) * .8).toFixed(1) + "'" + (k === "h" ? " stroke-opacity='.55'" : "") + " stroke-linecap='round' fill='none'/>";
       });
     });
     var w = 12 + Math.min(s.items.length, STREEP_RIJ) * 10, h = Math.ceil(s.items.length / STREEP_RIJ) * 30;
@@ -1687,7 +1697,7 @@
     $("spreekvraag").className = "spreek spk-" + it.qCode;
     $("spreekvraag").hidden = luister;
     $("instructie").textContent = m === "dictee" && !it.tts ? "" : it.instructie;
-    $("vraagtaal").textContent = s.fase === "paar" ? "Learn this pair" : s.fase === "kopie" ? "New word: copy the answer" : luister ? (it.aNoors && it.a === it.q ? "Listen and type what you hear:" : it.tts ? "Listen and answer:" : "Listen and type the Norwegian word:") : horen && !nieuw ? "No Norwegian voice on this device, so read it instead and type it:" : it.vast ? "Give the answer:" : it.aKant === 0 ? "Translate into Norwegian:" : "Translate into " + taalNaam(it.taal) + ":";
+    $("vraagtaal").textContent = s.fase === "paar" ? "Learn this pair" : s.fase === "kopie" ? "New word: copy the answer" : luister ? (it.aNoors && it.a === it.q ? "Listen and type what you hear:" : it.tts ? "Listen and answer:" : "Listen and type the Norwegian word:") : horen && !nieuw ? "No Norwegian voice on this device, so read it instead and type it:" : it.vast ? (it.instructie ? "" : "Give the answer:") : it.aKant === 0 ? "Translate into Norwegian:" : "Translate into " + taalNaam(it.taal) + ":";
     var kaal = function (t) { return String(t || "").replace(/[:.\s]+$/, "").toLowerCase(); };
     if (kaal($("vraagtaal").textContent) === kaal($("instructie").textContent)) $("vraagtaal").textContent = ""; // niet twee keer dezelfde zin
     if (nieuw) toonAchter(it);
@@ -1917,7 +1927,7 @@
     $("duur").textContent = Math.floor(sec / 60) + ":" + ("0" + sec % 60).slice(-2);
     $("aantal").textContent = n;
     $("goedfout").textContent = goed + " / " + s.fouten.length;
-    $("score").textContent = (s.quiz ? "Chapter quiz" : METHODES[s.methode]) + ": " + goed + " of " + n + " words right the first time.";
+    $("score").textContent = (s.quiz ? "Chapter quiz" : METHODES[s.methode]) + ": " + goed + " of " + aantal(n, "word") + " right the first time.";
     var tabel = function (lijst, kop, cls) {
       return lijst.length ? (cls === "g" ? "<details class='goedlijst'><summary>" : "") + "<h3 class='" + cls + "'>" + kop + " (" + lijst.length + ")</h3>" + (cls === "g" ? "</summary>" : "") + "<table class='tabel'><tr><th>Question</th><th>Correct answer</th><th>Your answer</th></tr>" +
         lijst.map(function (it) { return "<tr><td>" + esc(it.q) + "</td><td>" + esc(it.a) + " " + spreekKnop(it.a, it.aCode) + "</td><td>" + esc(it.invoer == null ? "" : it.invoer) + "</td></tr>"; }).join("") + "</table>" + (cls === "g" ? "</details>" : "") : "";
@@ -2008,7 +2018,7 @@
       var s = kapStatus(k), leeg = !s.n;
       return "<div class='kapkaart" + (s.st === "af" ? " af" : "") + "' data-kap='" + k.id + "'><a href='#' class='kaptitel' data-padkap='" + k.id + "'>" + (k.n ? "Chapter " + k.n + ": " : "") + esc(k.titel.replace(/^Kap\. \d+ – /, "")) + "</a>" +
         "<div class='balk' title='" + s.af + " of " + s.n + "'><div style='width:" + (s.n ? Math.round(100 * s.af / s.n) : 0) + "%'></div></div>" +
-        "<div class='rij'><span class='status st-" + (s.st === "af" ? "goed" : s.st === "bezig" ? "soms" : "nieuw") + "'>" + PADST[s.st] + "</span><span class='klein'>" + (leeg ? "No lists yet" : s.af + " of " + s.n + " steps done") + "</span>" +
+        "<div class='rij'><span class='status st-" + (s.st === "af" ? "goed" : s.st === "bezig" ? "soms" : "nieuw") + "'>" + PADST[s.st] + "</span><span class='klein'>" + (leeg ? "No lists yet" : s.af + " of " + aantal(s.n, "step") + " done") + "</span>" +
         (leeg ? "" : "<button class='" + (k === volgende ? "knop" : "link") + "' data-verder='" + k.id + "'>" + (s.af === s.n ? "Review" : s.af ? "Continue" : "Start") + "</button>") + "</div></div>";
     }).join("");
   }
@@ -2024,7 +2034,7 @@
       return "<div class='padstap'><h3>" + (si + 1) + ". " + esc(st.naam) + " <span class='klein'>" + st.items.filter(itemAf).length + "/" + st.items.length + "</span></h3>" + st.items.map(function (it) {
         var af = itemAf(it), i = nr++, vink = "<span class='vinkje" + (af ? " af" : "") + "' role='img' aria-label='" + (af ? "Done" : "Not done yet") + "'></span>";
         if (it.soort === "lijst") { var e = pad[it.l.id] || {}, n = (it.l.woorden || []).filter(bruikbaar).length;
-          return "<div class='padrij'>" + vink + "<span class='titel'><a href='#' data-open='" + esc(it.l.id) + "'>" + esc(kortTitel(it.l, k.titel)) + "</a> <span class='klein'>" + n + " words" + (e.best != null ? ", best " + pct(e.best) : "") + (e.geleerd ? ", learned" : "") + "</span></span><button class='knop grijs' data-paditem='" + i + "'>" + METHODES[aanbevolen(it.l)] + "</button></div>"; }
+          return "<div class='padrij'>" + vink + "<span class='titel'><a href='#' data-open='" + esc(it.l.id) + "'>" + esc(kortTitel(it.l, k.titel)) + "</a> <span class='klein'>" + aantal(n, "word") + (e.best != null ? ", best " + pct(e.best) : "") + (e.geleerd ? ", learned" : "") + "</span></span><button class='knop grijs' data-paditem='" + i + "'>" + METHODES[aanbevolen(it.l)] + "</button></div>"; }
         if (it.soort === "tekst") return "<div class='padrij'>" + vink + "<span class='titel'>" + esc(it.t.titel) + " <span class='klein'>audio" + (it.t.type ? ", " + esc(it.t.type) : "") + "</span></span><button class='knop grijs' data-paditem='" + i + "'>Listen</button></div>";
         var q = pad["quiz:" + k.id] || {};
         return "<div class='padrij'>" + vink + "<span class='titel'>About 20 random questions from this " + (k.n ? "chapter" : "exam material") + ". 80% or more completes it. <span class='klein'>" + (q.best != null ? "Best score: " + pct(q.best) : "Not taken yet") + "</span></span><button class='knop' data-paditem='" + i + "'>Start quiz</button></div>";
@@ -2125,7 +2135,7 @@
     if (bestaand) { bestaand.titel = titel; bestaand.woorden = woorden; delete selectie[bestaand.id]; }
     else l.push({ id: "mijn-" + Date.now(), titel: titel, woorden: woorden });
     if (!bewaarMijn(l)) return ($("mmelding").textContent = "Saving is not possible in this browser (storage blocked). Keep a copy of your text yourself.");
-    $("mmelding").textContent = "Saved: " + woorden.length + " words."; leegForm(); tekenMijn();
+    $("mmelding").textContent = "Saved: " + aantal(woorden.length, "word") + "."; leegForm(); tekenMijn();
   }
   function exporteer(x) {
     var tekst = x.woorden.map(function (w) { return w[0] + "\t" + w[1]; }).join("\n") + "\n";
@@ -2261,7 +2271,7 @@
   $("overslaan").onclick = overslaan;
   $("spreekvraag").onclick = function () { if (sessie && sessie.huidig) spreek(sessie.huidig.q, sessie.huidig.qCode); };
   $("nogmaals").onclick = function () { if (sessie && sessie.huidig) speelVraag(sessie.huidig); $("antwoord").focus(); };
-  $("stop").onclick = function () { if (confirm("Stop practising? You can continue later with Resume.")) { sessie = null; terug(); } };
+  $("stop").onclick = function () { sessie = null; toon("start"); }; // pauze: bewaard is bewaard, Resume staat op home
   $("wissel").onchange = function () {
     if (!sessie) return;
     if (this.value === "dictee" && !heeftNoorseStem()) { this.value = sessie.methode; return melding(GEEN_STEM); }
@@ -2274,7 +2284,7 @@
     a.href = URL.createObjectURL(new Blob([JSON.stringify({ app: "noors-overhoren", geheugen: mem, pad: pad }, null, 1)], { type: "application/json" }));
     a.download = "norwegian-progress-" + new Date().toISOString().slice(0, 10) + ".json";
     document.body.appendChild(a); a.click(); a.remove();
-    $("vmelding").textContent = "Exported: " + Object.keys(mem).length + " words, " + Object.keys(pad).length + " study path items.";
+    $("vmelding").textContent = "Exported: " + aantal(Object.keys(mem).length, "word") + ", " + aantal(Object.keys(pad).length, "study path item") + ".";
   };
   $("vimport").onclick = function () { $("vbestand").value = ""; $("vbestand").click(); };
   $("vbestand").onchange = function () {
@@ -2283,7 +2293,7 @@
       var x = JSON.parse(t) || {}, nieuw = geldigeMem(x.geheugen), np = geldigPad(x.pad), n = 0, m = 0;
       for (var k in nieuw) if (!mem[k] || nieuw[k].t > mem[k].t) { mem[k] = nieuw[k]; n++; } // samenvoegen: per woord wint de nieuwste
       for (k in np) { var e = pad[k] = pad[k] || {}, o = JSON.stringify(e); if (np[k].best != null) e.best = Math.max(e.best || 0, np[k].best); if (np[k].geleerd) e.geleerd = true; if (np[k].gehoord) e.gehoord = true; if (JSON.stringify(e) !== o) m++; }
-      bewaarMem(); bewaarPad(); $("vmelding").textContent = "Imported: " + n + " words and " + m + " study path items updated.";
+      bewaarMem(); bewaarPad(); $("vmelding").textContent = "Imported: " + aantal(n, "word") + " and " + aantal(m, "study path item") + " updated.";
     }).catch(function () { $("vmelding").textContent = "This file can't be read. Choose an exported .json file."; });
   };
   $("vwis").onclick = function () { if (confirm("Erase all progress (right/wrong per word and the study path)? This cannot be undone.")) { mem = {}; pad = {}; bewaarMem(); bewaarPad(); $("vmelding").textContent = "Progress erased."; } };
