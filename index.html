@@ -24,7 +24,7 @@
   :root {
     /* basis (brandbook ronde 7) */
     --paper: #f7f2e8; --ink: #2a2420; --soft: #5a514a; --glass: #ebe3d3; --wood: #b98a5e; --lijn: #e2d9c8; --hover: #efe7d8;
-    --board: #55644e; --chalk: #f7f2e8; --on-chalk: #2a2420; --plank: #b98a5e;
+    --board: #55644e; --chalk: #f7f2e8; --on-chalk: #2a2420;
     /* kruid: de echte kleur, alleen als vulling op papier */
     --kanel: #9c4f2c; --kardemomme: #8f9c7a; --safran: #d29a2f; --pepper: #3b3633; --nellik: #6a3546; --dill: #5c7a35; --paprika: #b0303c; --einer: #4e5a8a;
     /* krijt: tint van hetzelfde kruid, voor tekst en lijnen op het bord */
@@ -42,7 +42,7 @@
     --t-small: var(--t-16); --t-label: var(--t-20); --t-board: var(--t-40); --t-word: var(--t-60);
     /* ruimte: alleen 4, 8, 12, 16, 24, 32, 48, 64 */
     --s0: 4px; --s1: 8px; --s15: 12px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 48px; --s6: 64px;
-    --r-btn: 8px; --r-board: 12px; --r-jar: 22px;
+    --r-btn: 8px; --r-board: 12px;
     --calm: .9s cubic-bezier(.3,.1,.2,1);
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='12'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .42  0 0 0 0 .36  0 0 0 0 .3  0 0 0 -2.2 .95'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
     /* oude namen, nu op het merk gezet (de code gebruikt ze nog) */
@@ -54,14 +54,14 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --paper: #1d1b18; --ink: #efe8dc; --soft: #b8ada0; --glass: #2e2a25; --wood: #8a6a4a; --lijn: #3a352f; --hover: #2a2723;
-      --board: #3a4636; --plank: #7d6045; --empty: #6a6157; --pepper: #5e5650; --goed: #8fd18a; --fout: #ff9b85;
+      --board: #3a4636; --empty: #6a6157; --pepper: #5e5650; --goed: #8fd18a; --fout: #ff9b85;
       --motto: #fad5c2; --st-goed: #33402a; --st-soms: #4a3c1e; --st-fout: #4a2f24; --st-nieuw: #2e2a25; --schaduw: rgba(0,0,0,.5);
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
     --paper: #1d1b18; --ink: #efe8dc; --soft: #b8ada0; --glass: #2e2a25; --wood: #8a6a4a; --lijn: #3a352f; --hover: #2a2723;
-    --board: #3a4636; --plank: #7d6045; --empty: #6a6157; --pepper: #5e5650; --goed: #8fd18a; --fout: #ff9b85;
+    --board: #3a4636; --empty: #6a6157; --pepper: #5e5650; --goed: #8fd18a; --fout: #ff9b85;
     --motto: #fad5c2; --st-goed: #33402a; --st-soms: #4a3c1e; --st-fout: #4a2f24; --st-nieuw: #2e2a25; --schaduw: rgba(0,0,0,.5);
     color-scheme: dark;
   }
@@ -177,24 +177,20 @@
   .cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); margin-top: var(--s5); }
   .cta .knop { padding: 0 32px; }
 
-  /* thuis: bronnen als kruidenrek (desktop) */
-  .shelf { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); padding: var(--s5) var(--s3) 0; align-items: end; }
-  .plank { height: 14px; background: var(--plank); border-radius: 3px; }
+  /* thuis: bronnen als papieren kaarten met een groot icoon (desktop) */
+  .shelf { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); padding: var(--s5) var(--s3) 0; }
   .tegel { display: block; width: 100%; text-align: left; border: 0; background: none; cursor: pointer; color: var(--ink); padding: 0; font: inherit; }
   .tegel b { display: block; font-weight: 700; }
   .tegel span.klein { display: block; }
   .tegel:disabled { opacity: .55; cursor: not-allowed; }
   .tegel .gauw { font-size: var(--t-small); font-weight: 700; color: var(--soft); margin-left: 8px; }
-  .jar { position: relative; padding-top: 32px; text-align: center; transition: transform .4s; }
-  .jar:hover:not(:disabled) { transform: translateY(-4px); }
-  .jar::before { content: ""; position: absolute; top: 0; left: 14%; right: 14%; height: 26px; border-radius: 6px 6px 2px 2px; background: var(--sp, #d8cfbe); }
-  .jar::after { content: ""; position: absolute; top: 26px; left: 18%; right: 18%; height: 10px; background: var(--glass); opacity: .8; }
-  .jar .glass { display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 168px; background: var(--glass); border-radius: 14px 14px var(--r-jar) var(--r-jar); }
-  .jar .fill { position: absolute; left: 0; right: 0; bottom: 0; height: 34%; background: var(--sp); opacity: .9; }
-  .jar .etiket { position: relative; background: var(--paper); padding: 12px 8px; width: 94%; border-radius: 4px; }
-  .jar .etiket b { font-size: 20px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .jar .etiket .kort { margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .jar .etiket .lang, .jar .streep { display: none; }
+  .bron { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 190px; padding: 16px 8px; text-align: center; background: var(--paper); border: 1.5px solid var(--lijn); border-radius: 14px; box-shadow: 0 2px 0 var(--lijn); transition: transform .4s; }
+  .bron:hover:not(:disabled) { transform: translateY(-4px); }
+  .bron > img { width: 88px; height: 88px; margin-bottom: 4px; }
+  .bron .etiket { max-width: 100%; }
+  .bron .etiket b { font-size: 20px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bron .etiket .kort { margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bron .etiket .lang, .bron .streep { display: none; }
 
   /* methode: grote woorden met één regel uitleg */
   #methodetegels { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); padding: var(--s3) 0 0; align-items: start; }
@@ -502,17 +498,16 @@
     .cta { display: block; }
     .cta .knop { display: flex; width: 100%; padding: 0 16px; }
     .cta .link { display: block; margin-top: var(--s3); min-height: 44px; }
-    /* bronnen als grote woorden met een krijtstreep */
+    /* bronnen als lijst: icoon links, grote naam met uitleg, krijtstreep eronder */
     .shelf { display: block; padding: 0; }
-    .plank { display: none; }
-    .jar { padding: var(--s3) 0 0; text-align: left; }
-    .jar:hover:not(:disabled) { transform: none; }
-    .jar::before, .jar::after, .jar .fill, .jar .etiket .kort { display: none; }
-    .jar .glass { display: block; height: auto; background: none; border-radius: 0; overflow: visible; }
-    .jar .etiket { background: none; padding: 0; width: auto; }
-    .jar .etiket b { font-family: var(--f-board); font-weight: 500; font-size: var(--t-32); overflow: visible; }
-    .jar .etiket .lang { display: block; font-size: var(--t-body); margin-top: 4px; }
-    .jar .streep { display: block; width: 100%; height: 16px; margin-top: var(--s2); filter: url(#chalkL); }
+    .bron { flex-flow: row wrap; justify-content: flex-start; gap: 0 12px; min-height: 0; padding: var(--s3) 0 0; text-align: left; background: none; border: 0; border-radius: 0; box-shadow: none; }
+    .bron:hover:not(:disabled) { transform: none; }
+    .bron > img { width: 60px; height: 60px; margin: 0; flex: none; }
+    .bron .etiket { flex: 1; min-width: 0; }
+    .bron .etiket .kort { display: none; }
+    .bron .etiket b { font-family: var(--f-board); font-weight: 500; font-size: var(--t-32); white-space: normal; overflow: visible; }
+    .bron .etiket .lang { display: block; font-size: var(--t-body); margin-top: 4px; }
+    .bron .streep { display: block; flex-basis: 100%; height: 16px; margin-top: var(--s2); filter: url(#chalkL); }
     #methodetegels, .meerlijst { grid-template-columns: 1fr; gap: var(--s15); }
     .m { padding: var(--s3); }
     .m b { font-size: var(--t-32); }
@@ -1321,21 +1316,20 @@
   }
 
   // ---------- stap 1: bron ----------
-  var BRONKRUID = { luister: "dill" }; // alleen Listening is ook een woordsoort (uitspraak en luisteren)
   var STREEP = "M2 9 C 120 5, 260 12, 400 8 S 560 9, 598 8";
   function tekenBronnen() {
     var tel = {}; alleLijsten().forEach(function (l) { var b = bronVan(l); tel[b] = (tel[b] || 0) + 1; });
     var nu = huidigeKap();
     tekenThuis();
-    var potten = BRONNEN.map(function (b) {
-      var n = tel[b.id] || 0, leeg = b.id === "luister" ? !n && !LUISTER.length : b.id !== "pad" && b.id !== "mijn" && !n, sp = BRONKRUID[b.id];
+    var kaarten = BRONNEN.map(function (b) {
+      var n = tel[b.id] || 0, leeg = b.id === "luister" ? !n && !LUISTER.length : b.id !== "pad" && b.id !== "mijn" && !n;
       var kort = { pad: nu ? "Chapter " + nu.n + " now" : "Chapters 1 to 7", examen: "Practice lists", boek: "The textbook", docent: "From the lessons", learnnow: "The textbook", luister: "Book audio",
         mijn: n ? n + (n === 1 ? " list" : " lists") : "Make your own" }[b.id];
-      return "<button class='tegel jar' data-bron='" + b.id + "'" + (sp ? " style='--sp:var(--" + sp + ")'" : "") + (leeg ? " disabled" : "") + "><span class='glass'>" + (sp ? "<span class='fill'></span>" : "") +
-        "<span class='etiket'><b>" + esc(b.naam) + (leeg ? "<span class='gauw'>coming soon</span>" : "") + "</b><span class='klein kort'>" + esc(kort) + "</span><span class='klein lang'>" + esc(b.uitleg) + "</span></span></span>" +
-        "<svg class='streep' viewBox='0 0 600 16' preserveAspectRatio='none' aria-hidden='true'><path d='" + STREEP + "' fill='none' stroke='" + (sp === "dill" ? "var(--dill)" : "var(--empty)") + "' stroke-width='" + (sp === "dill" ? 7 : 6) + "' stroke-linecap='round'/></svg></button>";
+      return "<button class='tegel bron' data-bron='" + b.id + "'" + (leeg ? " disabled" : "") + "><img src='img/bronnen/" + (b.id === "learnnow" ? "now" : b.id) + "-192.png' alt=''>" +
+        "<span class='etiket'><b>" + esc(b.naam) + (leeg ? "<span class='gauw'>coming soon</span>" : "") + "</b><span class='klein kort'>" + esc(kort) + "</span><span class='klein lang'>" + esc(b.uitleg) + "</span></span>" +
+        "<svg class='streep' viewBox='0 0 600 16' preserveAspectRatio='none' aria-hidden='true'><path d='" + STREEP + "' fill='none' stroke='var(--empty)' stroke-width='6' stroke-linecap='round'/></svg></button>";
     });
-    $("brontegels").innerHTML = "<div class='shelf'>" + potten.slice(0, 4).join("") + "</div><div class='plank'></div><div class='shelf'>" + potten.slice(4).join("") + "</div><div class='plank'></div>";
+    $("brontegels").innerHTML = "<div class='shelf'>" + kaarten.join("") + "</div>";
     werkBalkBij();
   }
   function kiesBron(id) {
