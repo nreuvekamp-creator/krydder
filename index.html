@@ -262,8 +262,11 @@
   .turfblok { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s2); min-width: 0; }
   #turf svg { display: block; overflow: visible; }
   #bordkop .tellers { color: var(--chalk); margin: 0; filter: url(#chalkS); }
-  #bordkop .tellers { gap: 0; font-size: var(--t-16); }
-  #bordkop .tellers b { color: var(--chalk); font-size: var(--t-16); }
+  /* tellers rechts, naast de pauzeknop; het getal iets groter, als met de hand geschreven */
+  #bordkop .tellers { gap: 0 var(--s2); font-size: var(--t-16); align-items: baseline; margin: 6px 0 0 auto; }
+  #bordkop .tellers b { color: var(--chalk); font-size: var(--t-24); margin-left: 2px; }
+  /* telefoon: tellers en pauze op de eerste regel, turven eronder over de hele breedte */
+  @media (max-width: 600px) { #bordkop { flex-wrap: wrap; } .turfblok { order: 3; flex-basis: 100%; } #bordkop .tellers { font-size: var(--t-14); gap: 0 var(--s15); } #bordkop .tellers b { font-size: var(--t-20); } }
   .pauze { width: 44px; height: 44px; flex: none; border: 0; background: none; color: var(--chalk); border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin: -8px -8px 0 0; }
   .pauze:hover { background: rgba(255,255,255,.1); }
   #intro.board { padding: var(--s4) var(--s5); }
@@ -629,8 +632,8 @@
 
   <!-- OVERHOREN -->
   <section id="overhoor" class="verborgen">
-    <div id="bordkop"><div class="turfblok"><div id="turf" aria-hidden="true"></div>
-      <div class="tellers"><span><b id="tegaan">0</b> to go</span><span class="g">, <b id="tgoed">0</b> right</span><span class="f" id="tfoutwrap">, <b id="tfout">0</b> wrong</span><span id="wbteller"></span></div></div>
+    <div id="bordkop"><div class="turfblok"><div id="turf" aria-hidden="true"></div></div>
+      <div class="tellers"><span>to go: <b id="tegaan">0</b></span><span class="g">correct: <b id="tgoed">0</b></span><span class="f" id="tfoutwrap">wrong: <b id="tfout">0</b></span><span id="wbteller"></span></div>
       <button class="pauze" id="stop" aria-label="Pause" title="Pause"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1.5" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1.5" fill="currentColor"/></svg></button></div>
     <div id="intro" class="board" hidden><h3 id="introtitel"></h3><p id="introtekst"></p><button class="knop" id="introstart">Start</button><br><label class="klein"><input type="checkbox" id="introweg"> Don't show this explanation again</label></div>
     <div id="oefenvlak">
@@ -1562,7 +1565,7 @@
     var items = b.items.map(function (c) { var it = {}, p = paren[c.pi]; for (var k in c) if (!NIET_BEWAREN[k]) it[k] = c[k]; vulAf(it, p.w, p.l); if (it.q == null || it.a == null) throw new Error("kapot item"); return it; });
     var q = function (a) { return (a || []).map(function (i) { return items[i]; }).filter(Boolean); };
     return { paren: paren, methode: b.methode, naam: b.naam, items: items, wachtrij: q(b.wachtrij), blok: q(b.blok), nieuw: q(b.nieuw), fouten: q(b.fouten), quiz: b.quiz || null,
-      turfN: items.reduce(function (m, x) { return Math.max(m, +x.turf || 0); }, 0), geleerd: +b.geleerd || 0, goed: +b.goed || 0, fout: +b.fout || 0, huidig: null, fase: "", token: 0, begin: Date.now() - (+b.duur || 0) };
+      geleerd: +b.geleerd || 0, goed: +b.goed || 0, fout: +b.fout || 0, huidig: null, fase: "", token: 0, begin: Date.now() - (+b.duur || 0) };
   }
   function hervat() {
     if (!bewaard) return toon("start");
@@ -1614,23 +1617,23 @@
     var bord = s.fase === "intro" ? $("intro") : wb ? ($("wbinhoud").querySelector(".board") || $("werkblad")) : $("kaart");
     if ($("bordkop").parentNode !== bord) bord.insertBefore($("bordkop"), bord.firstChild);
   }
-  // turven: één krijtstreep per woord, per vijf met een schuine streep erdoor; wit = goed, rood krijt = fout, nog niet gevraagd = vage plek.
-  // Hooguit 20 strepen: de groep van nu met de buren eromheen.
+  // één krijtstreep per woord, op een vaste plek, de kleur laat zien hoe ver je met dat woord bent:
+  // vaag = nog niet gehad, geel = gezien (Learn), half wit = één keer goed getypt (Learn), wit = goed/geleerd, rood krijt = laatste antwoord fout.
+  var STREEP_RIJ = 30;
   function turfSvg(s) {
-    var n = s.items.length, leren = s.methode === "leren";
-    var gedaan = s.items.filter(function (x) { return x.turf; }).sort(function (a, b) { return a.turf - b.turf; });
-    var groepen = Math.ceil(n / 5), van = Math.max(0, Math.min((Math.floor(gedaan.length / 5) - 1) * 5, groepen * 5 - 20)), tot = Math.min(n, van + 20);
-    var g = "", rnd = function (i, k) { var x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x) - 0.5; };
-    for (var i = van; i < tot; i++) {
-      var it = gedaan[i], j = i - van, x0 = Math.floor(j / 5) * 62, k = i % 5;
-      var goed = it && (leren ? (it.streak || 0) >= GELEERD_NA : it.uitslag === "goed");
-      var kleur = !it ? "rgba(247,242,232,.09)" : goed ? "var(--chalk)" : "var(--chalk-fout)", dik = it ? 3.6 : 1.5;
-      var d = k < 4 ? "M" + (x0 + 8 + k * 10 + rnd(i, 1) * 2).toFixed(1) + " " + (5 + rnd(i, 2) * 2).toFixed(1) + " L" + (x0 + 8 + k * 10 + rnd(i, 3) * 3).toFixed(1) + " " + (33 + rnd(i, 4) * 2).toFixed(1)
-        : "M" + (x0 + 1).toFixed(1) + " " + (29 + rnd(i, 5) * 2).toFixed(1) + " L" + (x0 + 47).toFixed(1) + " " + (9 + rnd(i, 6) * 2).toFixed(1);
-      g += "<path d='" + d + "' stroke='" + kleur + "' stroke-width='" + dik + "' stroke-linecap='round' fill='none'/>";
-    }
-    var w = Math.max(62, Math.ceil((tot - van) / 5) * 62);
-    return "<svg class='chalk' width='" + w + "' height='38' viewBox='0 0 " + w + " 38'>" + g + "</svg>";
+    var leren = s.methode === "leren", g = "", rnd = function (i, k) { var x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x) - 0.5; };
+    s.items.slice().sort(function (a, b) { return (a.plek || 1e9) - (b.plek || 1e9); }).forEach(function (it, i) {
+      var kleur = "rgba(247,242,232,.09)", dik = 1.5, op = 1;
+      if (it.uitslag === "fout" && !(leren && it.streak)) { kleur = "var(--chalk-fout)"; dik = 3.6; }
+      else if (leren ? (it.streak || 0) >= GELEERD_NA : it.uitslag === "goed") { kleur = "var(--chalk)"; dik = 3.6; }
+      else if (leren && it.streak) { kleur = "var(--chalk)"; dik = 3.6; op = .55; }
+      else if (leren && it.gezien) { kleur = "var(--chalk-safran)"; dik = 3.6; }
+      var x = 4 + (i % STREEP_RIJ) * 9 + rnd(i, 1) * 2, y = Math.floor(i / STREEP_RIJ) * 30;
+      g += "<path d='M" + x.toFixed(1) + " " + (y + 4 + rnd(i, 2) * 4).toFixed(1) + " L" + (x + rnd(i, 3) * 2.4).toFixed(1) + " " + (y + 25 + rnd(i, 4) * 4).toFixed(1) +
+        "' stroke='" + kleur + "' stroke-width='" + (dik + rnd(i, 5) * .8).toFixed(1) + "'" + (op < 1 ? " stroke-opacity='" + op + "'" : "") + " stroke-linecap='round' fill='none'/>";
+    });
+    var w = 8 + Math.min(s.items.length, STREEP_RIJ) * 9, h = Math.ceil(s.items.length / STREEP_RIJ) * 30;
+    return "<svg class='chalk' width='" + w + "' height='" + h + "' viewBox='0 0 " + w + " " + h + "'>" + g + "</svg>";
   }
   function kiesVolgende(s) {
     if (s.methode !== "leren") return s.wachtrij.shift() || null;
@@ -1645,6 +1648,7 @@
     $("kaartachter").hidden = $("spellingtoon").hidden = $("nogmaals").hidden = $("heletekst").hidden = true;
     var it = s.huidig = kiesVolgende(s);
     if (!it) return einde();
+    if (!it.plek) it.plek = s.items.filter(function (x) { return x.plek; }).length + 1; // vaste plek in de streepjesrij, op volgorde van eerst gevraagd
     if (s.methode === "leren" && it.stap === 1 && s.paren.length < 2) it.stap = 2; // meerkeuze kan pas met 2 woorden
     var m = s.vormNu = s.methode === "leren" && it.stap === 1 ? "meerkeuze" : s.methode;
     s.fase = m === "spelling" ? "kijk" : "vraag";
@@ -1762,11 +1766,10 @@
     s.vorig.mem = onthoud(it, ok);
     if (ok) s.goed++; else { s.fout++; s.vorig.telde = fout(it); }
     it.uitslag = ok ? "goed" : "fout";
-    if (!it.turf && (s.methode !== "leren" || !ok)) it.turf = s.turfN = (s.turfN || 0) + 1;
     if (s.methode === "leren") {
       if (it.stap === 1) { if (ok) it.stap = 2; }
       else { it.streak = ok ? (it.streak || 0) + 1 : 0; if (!ok) it.stap = 1; } // fout getypt: terug naar meerkeuze
-      if (it.streak >= GELEERD_NA) { s.geleerd++; if (!it.turf) it.turf = s.turfN = (s.turfN || 0) + 1; }
+      if (it.streak >= GELEERD_NA) s.geleerd++;
       else s.blok.splice(ok ? s.blok.length : Math.min(2, s.blok.length), 0, it); // fout: komt snel terug
     } else if (!ok && s.methode !== "toets" && s.methode !== "werkblad") s.wachtrij.push(it); // fout: komt later terug (toets: nooit)
     if (s.methode !== "werkblad") { teller(); bewaarSessie(); }
