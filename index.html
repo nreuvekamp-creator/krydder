@@ -1636,15 +1636,15 @@
     s.items.slice().sort(function (a, b) { return (a.plek || 1e9) - (b.plek || 1e9); }).forEach(function (it, i) {
       var st = streepStand(it, leren), kr = it.kr || (it.kr = []);
       if (st && kr[kr.length - 1] !== st) { kr.push(st); if (kr.length > 5) kr.shift(); } // ponytail: hooguit 5 lagen krijt per woord
-      var x = 6 + (i % STREEP_RIJ) * 11 + rnd(i, 1) * 2, y = Math.floor(i / STREEP_RIJ) * 30;
-      g += "<circle cx='" + (x + rnd(i, 7)).toFixed(1) + "' cy='" + (y + 25 + rnd(i, 8) * 2).toFixed(1) + "' r='" + (1.7 + rnd(i, 9) * .5).toFixed(1) + "' fill='var(--chalk)' fill-opacity='.7'/>";
+      var x = 6 + (i % STREEP_RIJ) * 10 + rnd(i, 1) * 2, y = Math.floor(i / STREEP_RIJ) * 30;
+      g += "<circle cx='" + (x + rnd(i, 7)).toFixed(1) + "' cy='" + (y + 14.5 + rnd(i, 8) * 2).toFixed(1) + "' r='" + (1.7 + rnd(i, 9) * .5).toFixed(1) + "' fill='var(--chalk)' fill-opacity='.7'/>";
       kr.forEach(function (k, l) {
-        var r = function (n) { return rnd(i * 7 + l, n); }, xl = x + (l - (kr.length - 1) / 2) * 1.7 + r(1) * .6; // elke laag iets opzij, zodat alle eerdere strepen zichtbaar blijven
+        var r = function (n) { return rnd(i * 7 + l, n); }, xl = x + (l - (kr.length - 1) / 2) * .9 + r(1) * .3; // elke laag een fractie opzij: grote overlap, eerdere kleuren blijven als randje zichtbaar
         g += "<path d='M" + xl.toFixed(1) + " " + (y + 4 + r(2) * 4).toFixed(1) + " L" + (xl + r(3) * 2.4).toFixed(1) + " " + (y + 25 + r(4) * 3).toFixed(1) +
           "' stroke='" + KLEUR[k] + "' stroke-width='" + (3.4 + r(5) * .8).toFixed(1) + "'" + (k === "h" ? " stroke-opacity='.55'" : "") + " stroke-linecap='round' fill='none'/>";
       });
     });
-    var w = 12 + Math.min(s.items.length, STREEP_RIJ) * 11, h = Math.ceil(s.items.length / STREEP_RIJ) * 30;
+    var w = 12 + Math.min(s.items.length, STREEP_RIJ) * 10, h = Math.ceil(s.items.length / STREEP_RIJ) * 30;
     return "<svg class='chalk' width='" + w + "' height='" + h + "' viewBox='0 0 " + w + " " + h + "'>" + g + "</svg>";
   }
   function kiesVolgende(s) {
