@@ -266,6 +266,8 @@
   #bordkop .tellers { gap: 0 var(--s2); font-size: var(--t-16); align-items: baseline; margin: 6px 0 0 auto; }
   #bordkop .tellers b { color: var(--chalk); font-size: var(--t-24); margin-left: 2px; }
   /* telefoon: tellers en pauze op de eerste regel, turven eronder over de hele breedte */
+  /* laptop: streepjes bovenaan in het midden van het bord */
+  @media (min-width: 601px) { #bordkop { display: grid; grid-template-columns: 1fr auto 1fr auto; } .turfblok { grid-column: 2; } #bordkop .tellers { grid-column: 3; justify-self: end; } }
   @media (max-width: 600px) { #bordkop { flex-wrap: wrap; } .turfblok { order: 3; flex-basis: 100%; } #bordkop .tellers { font-size: var(--t-14); gap: 0 var(--s15); } #bordkop .tellers b { font-size: var(--t-20); } }
   .pauze { width: 44px; height: 44px; flex: none; border: 0; background: none; color: var(--chalk); border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin: -8px -8px 0 0; }
   .pauze:hover { background: rgba(255,255,255,.1); }
@@ -1617,20 +1619,28 @@
     var bord = s.fase === "intro" ? $("intro") : wb ? ($("wbinhoud").querySelector(".board") || $("werkblad")) : $("kaart");
     if ($("bordkop").parentNode !== bord) bord.insertBefore($("bordkop"), bord.firstChild);
   }
-  // één krijtstreep per woord, op een vaste plek, de kleur laat zien hoe ver je met dat woord bent:
-  // vaag = nog niet gehad, geel = gezien (Learn), half wit = één keer goed getypt (Learn), wit = goed/geleerd, rood krijt = laatste antwoord fout.
+  // per woord een krijtpuntje, zoals een docent telt; daarover komt per stap een nieuwe streep, de vorige blijft eronder zichtbaar:
+  // geel = gezien, nog niet goed getypt; half wit = één keer goed (Learn); wit = goed/geleerd; rood krijt = fout. Plek op volgorde van eerst gevraagd.
   var STREEP_RIJ = 30;
+  function streepStand(it, leren) {
+    if (it.uitslag === "fout" && !(leren && it.streak)) return "r";
+    if (leren ? (it.streak || 0) >= GELEERD_NA : it.uitslag === "goed") return "w";
+    if (leren && it.streak) return "h";
+    return (leren ? it.gezien : it.plek) ? "g" : "";
+  }
   function turfSvg(s) {
     var leren = s.methode === "leren", g = "", rnd = function (i, k) { var x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x) - 0.5; };
+    var KLEUR = { g: "var(--chalk-safran)", h: "var(--chalk)", w: "var(--chalk)", r: "var(--chalk-fout)" };
     s.items.slice().sort(function (a, b) { return (a.plek || 1e9) - (b.plek || 1e9); }).forEach(function (it, i) {
-      var kleur = "rgba(247,242,232,.09)", dik = 1.5, op = 1;
-      if (it.uitslag === "fout" && !(leren && it.streak)) { kleur = "var(--chalk-fout)"; dik = 3.6; }
-      else if (leren ? (it.streak || 0) >= GELEERD_NA : it.uitslag === "goed") { kleur = "var(--chalk)"; dik = 3.6; }
-      else if (leren && it.streak) { kleur = "var(--chalk)"; dik = 3.6; op = .55; }
-      else if (leren && it.gezien) { kleur = "var(--chalk-safran)"; dik = 3.6; }
+      var st = streepStand(it, leren), kr = it.kr || (it.kr = []);
+      if (st && kr[kr.length - 1] !== st) { kr.push(st); if (kr.length > 4) kr.shift(); } // ponytail: hooguit 4 lagen krijt per woord
       var x = 4 + (i % STREEP_RIJ) * 9 + rnd(i, 1) * 2, y = Math.floor(i / STREEP_RIJ) * 30;
-      g += "<path d='M" + x.toFixed(1) + " " + (y + 4 + rnd(i, 2) * 4).toFixed(1) + " L" + (x + rnd(i, 3) * 2.4).toFixed(1) + " " + (y + 25 + rnd(i, 4) * 4).toFixed(1) +
-        "' stroke='" + kleur + "' stroke-width='" + (dik + rnd(i, 5) * .8).toFixed(1) + "'" + (op < 1 ? " stroke-opacity='" + op + "'" : "") + " stroke-linecap='round' fill='none'/>";
+      g += "<circle cx='" + (x + rnd(i, 7)).toFixed(1) + "' cy='" + (y + 25 + rnd(i, 8) * 2).toFixed(1) + "' r='" + (1.7 + rnd(i, 9) * .5).toFixed(1) + "' fill='var(--chalk)' fill-opacity='.7'/>";
+      kr.forEach(function (k, l) {
+        var r = function (n) { return rnd(i * 7 + l, n); }, xl = x + r(1) * 1.6;
+        g += "<path d='M" + xl.toFixed(1) + " " + (y + 4 + r(2) * 4).toFixed(1) + " L" + (xl + r(3) * 2.4).toFixed(1) + " " + (y + 25 + r(4) * 3).toFixed(1) +
+          "' stroke='" + KLEUR[k] + "' stroke-width='" + (3.4 + r(5) * .8).toFixed(1) + "'" + (k === "h" ? " stroke-opacity='.55'" : "") + " stroke-linecap='round' fill='none'/>";
+      });
     });
     var w = 8 + Math.min(s.items.length, STREEP_RIJ) * 9, h = Math.ceil(s.items.length / STREEP_RIJ) * 30;
     return "<svg class='chalk' width='" + w + "' height='" + h + "' viewBox='0 0 " + w + " " + h + "'>" + g + "</svg>";
