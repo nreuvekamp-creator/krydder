@@ -265,6 +265,14 @@
   /* tellers rechts, naast de pauzeknop; het getal iets groter, als met de hand geschreven */
   #bordkop .tellers { gap: 0 var(--s2); font-size: var(--t-16); align-items: baseline; margin: 6px 0 0 auto; }
   #bordkop .tellers b { color: var(--chalk); font-size: var(--t-24); margin-left: 2px; }
+  /* laptop: woordsoort en opdracht linksboven, streepjes en tellers ernaast; de vraag eronder over de hele breedte */
+  @media (min-width: 601px) {
+    #kaart { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: var(--s3); align-content: start; }
+    #kaart > * { grid-column: 1 / -1; }
+    #kaart > #soort, #kaart > #instructie, #kaart > #vraagtaal { grid-column: 1; }
+    #kaart > #bordkop { grid-column: 2; grid-row: 1 / span 3; align-self: start; grid-template-columns: auto 1fr auto; }
+    #kaart > #bordkop .turfblok { grid-column: 1; } #kaart > #bordkop .tellers { grid-column: 2; }
+  }
   /* telefoon: tellers en pauze op de eerste regel, turven eronder over de hele breedte */
   /* laptop: streepjes bovenaan in het midden van het bord */
   @media (min-width: 601px) { #bordkop { display: grid; grid-template-columns: 1fr auto 1fr auto; } .turfblok { grid-column: 2; } #bordkop .tellers { grid-column: 3; justify-self: end; } }
@@ -1622,7 +1630,7 @@
     if ($("bordkop").parentNode !== bord) bord.insertBefore($("bordkop"), bord.firstChild);
   }
   // per woord een krijtpuntje, zoals een docent telt; daarover komt per stap een nieuwe streep, de vorige blijft eronder zichtbaar:
-  // geel = gezien, nog niet goed getypt; half wit = één keer goed (Learn); wit = goed/geleerd; rood krijt = fout. Plek op volgorde van eerst gevraagd.
+  // geel = gezien, nog niet goed getypt; half groen = één keer goed (Learn); groen = goed/geleerd; rood krijt = fout. Plek op volgorde van eerst gevraagd.
   var STREEP_RIJ = 30;
   function streepStand(it, leren) {
     if (it.uitslag === "fout" && !(leren && it.streak)) return "r";
@@ -1632,7 +1640,7 @@
   }
   function turfSvg(s) {
     var leren = s.methode === "leren", g = "", rnd = function (i, k) { var x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x) - 0.5; };
-    var KLEUR = { g: "var(--chalk-safran)", h: "var(--chalk)", w: "var(--chalk)", r: "var(--chalk-fout)" };
+    var KLEUR = { g: "var(--chalk-safran)", h: "var(--chalk-goed)", w: "var(--chalk-goed)", r: "var(--chalk-fout)" }; // goed = groen krijt, los van het gele "gezien"
     s.items.slice().sort(function (a, b) { return (a.plek || 1e9) - (b.plek || 1e9); }).forEach(function (it, i) {
       var st = streepStand(it, leren), kr = it.kr || (it.kr = []);
       if (st && kr[kr.length - 1] !== st) { kr.push(st); if (kr.length > 5) kr.shift(); } // ponytail: hooguit 5 lagen krijt per woord
